@@ -1,15 +1,22 @@
 # Capa
-Título do Projeto: [Título claro e conciso que reflete a essência do produto ou ferramenta].
-Nome do Estudante: [Nome completo do estudante].
-Curso: Engenharia de Software.
-Data de Entrega: [Data].
+
+- **Título do Projeto**: E-coGram.
+- **Nome do Estudante**: Michael Aparecido Varaldo.
+- **Curso**: Engenharia de Software.
+- **Data de Entrega**: [xx/xx/xxxx].
+
 # Resumo
-Breve descrição do conteúdo do documento, incluindo o propósito do projeto e os principais pontos de discussão.
+O projeto consiste na criação de uma página de controle de imagens para qualquer site de e-commerce, com o objetivo de facilitar a seleção e o envio de imagens para publicação. Os principais pontos incluem uma interface intuitiva para escolha de imagens, gerenciamento eficiente de uploads, integração com o site e foco em usabilidade, atualização do processo de curaria visual.
 
 ## 1. Introdução
-Contexto: Breve descrição do contexto que envolve o projeto.
-Justificativa: Explicação da relevância do projeto para o campo da engenharia de software.
-Objetivos: Descrição do objetivo principal do projeto e de quaisquer objetivos secundários.
+Contexto:
+O projeto surge no âmbito de um e-commerce que necessita de uma solução eficiente para gerenciar o conteúdo visual de seus produtos. Com o aumento da demanda por atualizações rápidas e precisas no site, o manual de manipulação de imagens torna-se um processo demorado e suscetível a erros, impactando a experiência do usuário e a agilidade operacional.
+
+Justificativa:
+No campo da engenharia de software, a automação e otimização de processos repetitivos são essenciais para aumentar a produtividade e reduzir falhas. Este projeto é relevante pois propõe uma ferramenta que centraliza e simplifica o controle de imagens, alinhando-se às necessidades de escalabilidade e eficiência das plataformas de e-commerce. Além disso, contribui para a melhoria da qualidade do produto final selecionado ao cliente, um fator crítico nas negociações eletrônicas.
+
+Objetivos:
+O objetivo principal é desenvolver uma página de controle de imagens que permita a seleção e o envio organizado de imagens para o site de um e-commerce, aprimorando o fluxo de publicação. Os objetivos secundários incluem garantir uma interface intuitiva e amigável, integrar uma solução ao sistema existente do site e possibilitar uma gestão visual escalável e confiável.
 ## 2. Descrição do Projeto
 Tema do Projeto: Detalhes do tema, incluindo o produto ou ferramenta a ser desenvolvido.
 Problemas a Resolver: Lista dos principais problemas que o projeto visa resolver.
