@@ -17,10 +17,19 @@ No campo da engenharia de software, a automação e otimização de processos re
 
 Objetivos:
 O objetivo principal é desenvolver uma página de controle de imagens que permita a seleção e o envio organizado de imagens para o site de um e-commerce, aprimorando o fluxo de publicação. Os objetivos secundários incluem garantir uma interface intuitiva e amigável, integrar uma solução ao sistema existente do site e possibilitar uma gestão visual escalável e confiável.
+
 ## 2. Descrição do Projeto
-Tema do Projeto: Detalhes do tema, incluindo o produto ou ferramenta a ser desenvolvido.
-Problemas a Resolver: Lista dos principais problemas que o projeto visa resolver.
-Limitações: Delimitação dos problemas que o projeto não abordará.
+Tema do Projeto:
+O projeto tem como tema o desenvolvimento de uma página de controle de imagens externa para um site de e-commerce. A ferramenta a ser criada permitirá que os usuários selecionem, organizem e enviem imagens de produtos de forma eficiente, integrando-se ao sistema existente no site. A página será projetada para oferecer uma interface simples e funcional, com foco na otimização do processo de publicação de conteúdo visual.
+
+Problemas a Solucionador:
+Ineficiência no gerenciamento manual: Eliminar o tempo excessivo gasto na seleção e upload de imagens realizadas de forma manual.
+Falta de organização: Resolver a desordem no fluxo de imagens, garantindo que apenas as selecionadas sejam enviadas ao site.
+Erros humanos: Reduzir inconsistências ou falhas no processo de publicação, como envio de imagens erradas ou duplicadas.
+Dificuldade de integração: Facilitar a conexão entre o controle de imagens e a plataforma de e-commerce já em uso.
+
+Limitações:
+O projeto não abordará o desenvolvimento de um sistema completo de edição de imagens (como configurações de tamanho ou filtros), focando apenas na seleção e envio. Também não incluirá a criação de uma infraestrutura de armazenamento de imagens, assumindo que o e-commerce já possui um servidor ou banco de dados para essa finalidade. Por fim, questões relacionadas à segurança avançada, como criptografia de dados, serão exclusivas do escopo inicial, sendo consideradas como possíveis melhorias futuras.
 ## 3. Especificação Técnica
 Descrição detalhada da proposta, incluindo requisitos de software, protocolos, algoritmos, procedimentos, formatos de dados, etc.
 
