@@ -30,13 +30,44 @@ Dificuldade de integração: Facilitar a conexão entre o controle de imagens e 
 
 Limitações:
 O projeto não abordará o desenvolvimento de um sistema completo de edição de imagens (como configurações de tamanho ou filtros), focando apenas na seleção e envio. Também não incluirá a criação de uma infraestrutura de armazenamento de imagens, assumindo que o e-commerce já possui um servidor ou banco de dados para essa finalidade. Por fim, questões relacionadas à segurança avançada, como criptografia de dados, serão exclusivas do escopo inicial, sendo consideradas como possíveis melhorias futuras.
+
 ## 3. Especificação Técnica
 Descrição detalhada da proposta, incluindo requisitos de software, protocolos, algoritmos, procedimentos, formatos de dados, etc.
 
 ## 3.1. Requisitos de Software
 Apresentar os requisitos do tema proposto.
-Lista de Requisitos: Apresentar uma lista contendo os Requisitos Funcionais (RF) e Não-Funcionais (RNF).
+
+**Requisitos Funcionais (RF):**
+
+RF01: O sistema deve permitir que o usuário faça upload de imagens a partir de seu dispositivo local.
+
+RF02: O sistema deve exibir uma pré-visualização das imagens selecionadas antes do envio.
+
+RF03: O sistema deve permitir a organização das imagens por meio de arrastar e soltar.
+
+RF04: O sistema deve possibilitar a exclusão de imagens selecionadas antes do envio.
+
+RF05: O sistema deve integrar-se à API do e-commerce para envio das imagens ao servidor.
+
+RF06: O sistema deve notificar o usuário sobre o sucesso ou falha do upload de imagens.
+
+RF07: O sistema deve permitir a seleção de múltiplas imagens simultaneamente.
+
+**Requisitos Não-Funcionais (RNF):**
+
+RNF01: A interface deve ser intuitiva e responsiva, com tempo de carregamento inferior a 2 segundos em conexões de 10 Mbps.
+
+RNF02: O sistema deve suportar até 100 imagens por sessão de upload sem degradação de desempenho.
+
+RNF03: A aplicação deve ser compatível com os navegadores Chrome, Firefox, Safari e Edge (versões mais recentes).
+
+RNF04: O sistema deve garantir que as imagens sejam exibidas com resolução adequada para pré-visualização (máximo de 1 MB por imagem).
+
+RNF05: A aplicação deve ser escalável para suportar até 1.000 usuários simultâneos.
+
 Representação dos Requisitos: Representar os RFs por meio de um Diagrama de Casos de Uso (UML).
+
+
 ## 3.2. Considerações de Design
 Discussão sobre as escolhas de design, incluindo alternativas consideradas e justificativas para as decisões tomadas.
 Visão Inicial da Arquitetura: Descrição dos componentes principais e suas interconexões.
