@@ -65,8 +65,9 @@ RNF04: O sistema deve garantir que as imagens sejam exibidas com resolução ade
 
 RNF05: A aplicação deve ser escalável para suportar até 100 usuários simultâneos.
 
-Representação dos Requisitos: Representar os RFs por meio de um Diagrama de Casos de Uso (UML).
+Representação dos Requisitos:
 
+![Diagrama de Casos de Uso](./Caso_de_uso_uml.png)
 
 ## 3.2. Considerações de Design
 Discussão sobre as escolhas de design, incluindo alternativas consideradas e justificativas para as decisões tomadas.
