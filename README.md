@@ -90,6 +90,7 @@ Model: Gerencia os dados das imagens (seleção, organização, status).
 View: Interface gráfica com componentes React.
 Controller: Lógica de interação, como manipulação de eventos de upload e arrastar/soltar.
 No backend, será adotada uma abordagem de Microserviços para a API, permitindo futura expansão para outras funcionalidades, como validação de imagens.
+![Modelo C4](./ModeloC4.png)
 
 ## 3.3. Stack Tecnológica
 Linguagens de Programação: Justificativa para a escolha de linguagens específicas.
