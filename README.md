@@ -39,31 +39,21 @@ Apresentar os requisitos do tema proposto.
 
 **Requisitos Funcionais (RF):**
 
-RF01: O sistema deve permitir que o usuário faça upload de imagens a partir de seu dispositivo local.
-
-RF02: O sistema deve exibir uma pré-visualização das imagens selecionadas antes do envio.
-
-RF03: O sistema deve permitir a organização das imagens por meio de arrastar e soltar.
-
-RF04: O sistema deve possibilitar a exclusão de imagens selecionadas antes do envio.
-
-RF05: O sistema deve integrar-se à API do e-commerce para envio das imagens ao servidor.
-
-RF06: O sistema deve notificar o usuário sobre o sucesso ou falha do upload de imagens.
-
-RF07: O sistema deve permitir a seleção de múltiplas imagens simultaneamente.
-
+- RF01: O sistema deve permitir que o usuário faça upload de imagens a partir de seu dispositivo local.
+- RF02: O sistema deve exibir uma pré-visualização das imagens selecionadas antes do envio.
+- RF03: O sistema deve permitir a organização das imagens por meio de arrastar e soltar.
+- RF04: O sistema deve possibilitar a exclusão de imagens selecionadas antes do envio.
+- RF05: O sistema deve integrar-se à API do e-commerce para envio das imagens ao servidor.
+- RF06: O sistema deve notificar o usuário sobre o sucesso ou falha do upload de imagens.
+- RF07: O sistema deve permitir a seleção de múltiplas imagens simultaneamente.
+ 
 **Requisitos Não-Funcionais (RNF):**
 
-RNF01: A interface deve ser intuitiva e responsiva, com tempo de carregamento inferior a 2 segundos em conexões de 10 Mbps.
-
-RNF02: O sistema deve suportar até 100 imagens por sessão de upload sem degradação de desempenho.
-
-RNF03: A aplicação deve ser compatível com os navegadores Chrome, Firefox, Safari e Edge (versões mais recentes).
-
-RNF04: O sistema deve garantir que as imagens sejam exibidas com resolução adequada para pré-visualização (máximo de 1 MB por imagem).
-
-RNF05: A aplicação deve ser escalável para suportar até 100 usuários simultâneos.
+- RNF01: A interface deve ser intuitiva e responsiva, com tempo de carregamento inferior a 2 segundos em conexões de 10 Mbps.
+- RNF02: O sistema deve suportar até 100 imagens por sessão de upload sem degradação de desempenho.
+- RNF03: A aplicação deve ser compatível com os navegadores Chrome, Firefox, Safari e Edge (versões mais recentes).
+- RNF04: O sistema deve garantir que as imagens sejam exibidas com resolução adequada para pré-visualização (máximo de 1 MB por imagem).
+- RNF05: A aplicação deve ser escalável para suportar até 100 usuários simultâneos.
 
 Representação dos Requisitos:
 
@@ -73,31 +63,98 @@ Representação dos Requisitos:
 Discussão sobre as escolhas de design, incluindo alternativas consideradas e justificativas para as decisões tomadas.
 Visão Inicial da Arquitetura: Descrição dos componentes principais e suas interconexões.
 Padrões de Arquitetura: Indicação de padrões específicos utilizados (ex.: MVC, Microserviços).
-Modelos C4: Detalhamento da arquitetura em níveis: Contexto, Contêineres, Componentes, Código.
 
 O design da aplicação prioriza simplicidade e eficiência, com uma interface de usuário minimalista para reduzir a curva de aprendizado. Foram consideradas duas abordagens principais:
+
 Aplicação Monolítica: Uma única aplicação web com todas as funcionalidades integradas. Vantagem: simplicidade de desenvolvimento e manutenção. Desvantagem: menor escalabilidade.
+
 Arquitetura Baseada em Componentes: Uso de uma arquitetura modular com React para componentes reutilizáveis. Vantagem: maior flexibilidade e escalabilidade. Desvantagem: maior complexidade inicial.
+
 A abordagem baseada em componentes foi escolhida devido à necessidade de escalabilidade e à possibilidade de reutilizar componentes em futuras expansões do sistema.
+
 Visão Inicial da Arquitetura
+
 A arquitetura da aplicação é composta por três camadas principais:
-Frontend: Interface web para interação do usuário, construída com React.
-Backend: API RESTful para comunicação com o servidor do e-commerce, implementada com Node.js e Express.
-Serviço Externo: Integração com o servidor de armazenamento de imagens do e-commerce (assumido como existente).
+
+- Frontend: Interface web para interação do usuário, construída com React.
+- Backend: API RESTful para comunicação com o servidor do e-commerce, implementada com Node.js e Express.
+- Serviço Externo: Integração com o servidor de armazenamento de imagens do e-commerce (assumido como existente).
+
 Padrões de Arquitetura
+
 O padrão MVC (Model-View-Controller) será utilizado no frontend:
-Model: Gerencia os dados das imagens (seleção, organização, status).
-View: Interface gráfica com componentes React.
-Controller: Lógica de interação, como manipulação de eventos de upload e arrastar/soltar.
+
+- Model: Gerencia os dados das imagens (seleção, organização, status).
+- View: Interface gráfica com componentes React.
+- Controller: Lógica de interação, como manipulação de eventos de upload e arrastar/soltar.
+
 No backend, será adotada uma abordagem de Microserviços para a API, permitindo futura expansão para outras funcionalidades, como validação de imagens.
+
+**Modelos C4**
+
+Nível 1: Contexto
+
 ![Modelo C4](./ModeloC4.png)
+
+Nível 2: Contêineres
+
+- Aplicação Web: Interface React para upload e gerenciamento de imagens.
+- API Gateway: Backend Node.js/Express para comunicação com o e-commerce.
+- Serviço de Armazenamento: Servidor do e-commerce (externo) para armazenamento de imagens.
+
+Nível 3: Componentes
+
+- Componente de Upload: Gerencia a seleção e envio de arquivos.
+- Componente de Visualização: Exibe pré-visualizações e permite organização.
+- Componente de Notificação: Exibe mensagens de sucesso ou erro.
+- API Client: Integra com a API do e-commerce.
+
+Nível 4: CódigoOs componentes React serão estruturados em arquivos JSX, com hooks para gerenciamento de estado (useState, useEffect). O backend usará rotas Express para endpoints como /upload e /status.
 
 ## 3.3. Stack Tecnológica
 Linguagens de Programação: Justificativa para a escolha de linguagens específicas.
 Frameworks e Bibliotecas: Frameworks e bibliotecas a serem utilizados.
 Ferramentas de Desenvolvimento e Gestão de Projeto: Ferramentas para desenvolvimento e gestão do projeto. ... qualquer outra informação referente a stack tecnológica ...
+
+Linguagens de Programação
+
+- JavaScript (ES6+): Escolhido para o frontend e backend devido à sua ampla adoção, suporte a frameworks modernos e integração com APIs REST.
+- HTML5/CSS3: Para estruturação e estilização da interface.
+
+Frameworks e Bibliotecas
+
+- React (18.x): Para construção de componentes reutilizáveis e gerenciamento dinâmico da interface.
+- Node.js (20.x) com Express: Para criação da API RESTful, devido à sua leveza e compatibilidade com JavaScript.
+- Tailwind CSS: Para estilização rápida e responsiva da interface.
+- Axios: Para chamadas HTTP à API do e-commerce.
+- React-DnD: Para funcionalidade de arrastar e soltar.
+
+Ferramentas de Desenvolvimento e Gestão de Projeto
+
+- VS Code: Editor de código com suporte a extensões para JavaScript e React.
+- Git/GitHub: Controle de versão e colaboração.
+- Vite: Ferramenta de build para o frontend, por sua rapidez e suporte a React.
+- Postman: Teste de APIs durante o desenvolvimento.
+
+Outras Tecnologias
+
+- ESLint/Prettier: Para padronização e formatação de código.
+- Vitest: Para testes unitários no frontend.
+
 ## 3.4. Considerações de Segurança
-Análise de possíveis questões de segurança e como mitigá-las.
+
+Análise de Riscos
+
+- Upload de Arquivos Maliciosos: Arquivos não-imagem ou com scripts maliciosos podem ser enviados.
+- Ataques de Negação de Serviço (DoS): Uploads massivos podem sobrecarregar o servidor.
+- Acesso Não Autorizado: Usuários não autenticados podem tentar acessar a API.
+
+Mitigações
+
+- Validação de Arquivos: Restringir uploads a formatos de imagem (JPEG, PNG, WEBP) e limitar o tamanho máximo a 5 MB por arquivo.
+- Limitação de Taxa (Rate Limiting): Implementar limitação de requisições na API para evitar sobrecarga.
+- Autenticação: Embora fora do escopo inicial, recomendar a integração com um sistema de autenticação (como OAuth ou JWT) para futuras iterações.
+- Sanitização de Entradas: Verificar e sanitizar todos os dados enviados pelo frontend para evitar injeção de código.
 
 ## 4. Próximos Passos
 Descrição dos passos seguintes após a conclusão do documento, com uma visão geral do cronograma para Portfólio I e II.
