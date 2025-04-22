@@ -63,7 +63,7 @@ RNF03: A aplicação deve ser compatível com os navegadores Chrome, Firefox, Sa
 
 RNF04: O sistema deve garantir que as imagens sejam exibidas com resolução adequada para pré-visualização (máximo de 1 MB por imagem).
 
-RNF05: A aplicação deve ser escalável para suportar até 1.000 usuários simultâneos.
+RNF05: A aplicação deve ser escalável para suportar até 100 usuários simultâneos.
 
 Representação dos Requisitos: Representar os RFs por meio de um Diagrama de Casos de Uso (UML).
 
