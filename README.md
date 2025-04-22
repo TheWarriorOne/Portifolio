@@ -74,6 +74,23 @@ Discussão sobre as escolhas de design, incluindo alternativas consideradas e ju
 Visão Inicial da Arquitetura: Descrição dos componentes principais e suas interconexões.
 Padrões de Arquitetura: Indicação de padrões específicos utilizados (ex.: MVC, Microserviços).
 Modelos C4: Detalhamento da arquitetura em níveis: Contexto, Contêineres, Componentes, Código.
+
+O design da aplicação prioriza simplicidade e eficiência, com uma interface de usuário minimalista para reduzir a curva de aprendizado. Foram consideradas duas abordagens principais:
+Aplicação Monolítica: Uma única aplicação web com todas as funcionalidades integradas. Vantagem: simplicidade de desenvolvimento e manutenção. Desvantagem: menor escalabilidade.
+Arquitetura Baseada em Componentes: Uso de uma arquitetura modular com React para componentes reutilizáveis. Vantagem: maior flexibilidade e escalabilidade. Desvantagem: maior complexidade inicial.
+A abordagem baseada em componentes foi escolhida devido à necessidade de escalabilidade e à possibilidade de reutilizar componentes em futuras expansões do sistema.
+Visão Inicial da Arquitetura
+A arquitetura da aplicação é composta por três camadas principais:
+Frontend: Interface web para interação do usuário, construída com React.
+Backend: API RESTful para comunicação com o servidor do e-commerce, implementada com Node.js e Express.
+Serviço Externo: Integração com o servidor de armazenamento de imagens do e-commerce (assumido como existente).
+Padrões de Arquitetura
+O padrão MVC (Model-View-Controller) será utilizado no frontend:
+Model: Gerencia os dados das imagens (seleção, organização, status).
+View: Interface gráfica com componentes React.
+Controller: Lógica de interação, como manipulação de eventos de upload e arrastar/soltar.
+No backend, será adotada uma abordagem de Microserviços para a API, permitindo futura expansão para outras funcionalidades, como validação de imagens.
+
 ## 3.3. Stack Tecnológica
 Linguagens de Programação: Justificativa para a escolha de linguagens específicas.
 Frameworks e Bibliotecas: Frameworks e bibliotecas a serem utilizados.
