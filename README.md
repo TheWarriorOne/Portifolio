@@ -112,10 +112,13 @@ Nível 4: Códigos:
 Os componentes React serão estruturados em arquivos JSX, com hooks para gerenciamento de estado (useState, useEffect).
 
 Exemplo:
+
+```javascript
 app.post('/upload', (req, res) => {
   // Lógica de upload
   res.status(200).json({ message: 'Upload concluído' });
 });
+```
 
 ## 3.3. Stack Tecnológica
 
@@ -174,12 +177,19 @@ Mitigações
 
 ## 5. Referências
 Sommerville, I. (2018). Engenharia de Software, 10ª ed. Pearson.
+
 Nielsen Norman Group. (2023). E-commerce UX: The Impact of Visual Content.
+
 React Documentation. (2025). Disponível em: https://react.dev/.
+
 Node.js v20.10.0 Documentation. (2025). Disponível em: https://nodejs.org/.
+
 Tailwind CSS Documentation. (2025). Disponível em: https://tailwindcss.com/.
+
 Pressman, R., & Maxim, B. (2020). Software Engineering: A Practitioner's Approach, 9ª ed. McGraw-Hill.
+
 WCAG 2.1 Guidelines. (2025). Disponível em: https://www.w3.org/WAI/standards-guidelines/wcag/.
+
 Shopify Case Study: Image Optimization. (2024). Disponível em: https://shopify.dev/.
 
 ## 6. Apêndices (Opcionais)
