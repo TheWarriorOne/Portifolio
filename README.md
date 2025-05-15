@@ -6,21 +6,26 @@
 - **Data de Entrega**: [xx/xx/xxxx].
 
 # Resumo
-O projeto consiste na criação de uma página de controle de imagens para qualquer site de e-commerce, com o objetivo de facilitar a seleção e o envio de imagens para publicação. Os principais pontos incluem uma interface intuitiva para escolha de imagens, gerenciamento eficiente de uploads, integração com o site e foco em usabilidade, atualização do processo de curaria visual.
+O projeto E-coGram consiste na criação de uma página web para controle de imagens em um e-commerce, voltada para administradores de conteúdo. A ferramenta facilita a seleção, organização e envio de imagens de produtos, integrando-se ao site existente. Com uma interface intuitiva, uploads eficientes e foco na curadoria visual, espera-se reduzir o tempo de publicação e minimizar erros operacionais, melhorando a experiência do cliente final.
 
 ## 1. Introdução
-Contexto:
+
 O projeto surge no âmbito de um e-commerce que necessita de uma solução eficiente para gerenciar o conteúdo visual de seus produtos. Com o aumento da demanda por atualizações rápidas e precisas no site, o manual de manipulação de imagens torna-se um processo demorado e suscetível a erros, impactando a experiência do usuário e a agilidade operacional.
 
 Justificativa:
-No campo da engenharia de software, a automação e otimização de processos repetitivos são essenciais para aumentar a produtividade e reduzir falhas. Este projeto é relevante pois propõe uma ferramenta que centraliza e simplifica o controle de imagens, alinhando-se às necessidades de escalabilidade e eficiência das plataformas de e-commerce. Além disso, contribui para a melhoria da qualidade do produto final selecionado ao cliente, um fator crítico nas negociações eletrônicas.
+Imagens de qualidade são cruciais no e-commerce, com estudos indicando que 80% dos consumidores consideram o conteúdo visual um fator decisivo na compra (Fonte: Nielsen, 2023). A automação de processos repetitivos, uma prática central na engenharia de software, aumenta a eficiência e reduz falhas. O E-coGram é relevante por otimizar a curadoria visual, alinhando-se a tendências de DevOps e escalabilidade, contribuindo para a agilidade operacional e a satisfação do cliente.
 
 Objetivos:
-O objetivo principal é desenvolver uma página de controle de imagens que permita a seleção e o envio organizado de imagens para o site de um e-commerce, aprimorando o fluxo de publicação. Os objetivos secundários incluem garantir uma interface intuitiva e amigável, integrar uma solução ao sistema existente do site e possibilitar uma gestão visual escalável e confiável.
+- Principal: Desenvolver uma página de controle de imagens que simplifique a seleção e envio de imagens para um e-commerce, otimizando o fluxo de publicação.
+
+- Secundários:
+ - Criar uma interface com tempo de aprendizado inferior a 5 minutos.
+ - Garantir integração confiável com a API do e-commerce.
+ - Desenvolver uma solução expansível para futuras funcionalidades, como categorização avançada.
 
 ## 2. Descrição do Projeto
-Tema do Projeto:
-O projeto tem como tema o desenvolvimento de uma página de controle de imagens externa para um site de e-commerce. A ferramenta a ser criada permitirá que os usuários selecionem, organizem e enviem imagens de produtos de forma eficiente, integrando-se ao sistema existente no site. A página será projetada para oferecer uma interface simples e funcional, com foco na otimização do processo de publicação de conteúdo visual.
+
+O E-coGram é uma aplicação web standalone para administradores de conteúdo de um e-commerce, permitindo selecionar, organizar e enviar imagens de produtos de forma eficiente. A ferramenta será integrada ao sistema existente do site, com foco em usabilidade e otimização do processo de publicação visual.
 
 Problemas a Solucionador:
 Ineficiência no gerenciamento manual: Eliminar o tempo excessivo gasto na seleção e upload de imagens realizadas de forma manual.
@@ -35,7 +40,6 @@ O projeto não abordará o desenvolvimento de um sistema completo de edição de
 Descrição detalhada da proposta, incluindo requisitos de software, protocolos, algoritmos, procedimentos, formatos de dados, etc.
 
 ## 3.1. Requisitos de Software
-Apresentar os requisitos do tema proposto.
 
 **Requisitos Funcionais (RF):**
 
@@ -60,25 +64,19 @@ Representação dos Requisitos:
 ![Diagrama de Casos de Uso](./Caso_de_uso_uml.png)
 
 ## 3.2. Considerações de Design
-Discussão sobre as escolhas de design, incluindo alternativas consideradas e justificativas para as decisões tomadas.
-Visão Inicial da Arquitetura: Descrição dos componentes principais e suas interconexões.
-Padrões de Arquitetura: Indicação de padrões específicos utilizados (ex.: MVC, Microserviços).
 
 O design da aplicação prioriza simplicidade e eficiência, com uma interface de usuário minimalista para reduzir a curva de aprendizado. Foram consideradas duas abordagens principais:
 
-Aplicação Monolítica: Uma única aplicação web com todas as funcionalidades integradas. Vantagem: simplicidade de desenvolvimento e manutenção. Desvantagem: menor escalabilidade.
-
-Arquitetura Baseada em Componentes: Uso de uma arquitetura modular com React para componentes reutilizáveis. Vantagem: maior flexibilidade e escalabilidade. Desvantagem: maior complexidade inicial.
-
-A abordagem baseada em componentes foi escolhida devido à necessidade de escalabilidade e à possibilidade de reutilizar componentes em futuras expansões do sistema.
+- Aplicação Monolítica: Simplicidade no desenvolvimento, mas limitada para CI/CD e escalabilidade.
+- Arquitetura Baseada em Componentes: Flexibilidade e reutilização, com maior complexidade inicial. Escolhida por suportar expansões futuras.
 
 Visão Inicial da Arquitetura
 
 A arquitetura da aplicação é composta por três camadas principais:
 
-- Frontend: Interface web para interação do usuário, construída com React.
+- Frontend: Interface React para interação.
 - Backend: API RESTful para comunicação com o servidor do e-commerce, implementada com Node.js e Express.
-- Serviço Externo: Integração com o servidor de armazenamento de imagens do e-commerce (assumido como existente).
+- Serviço Externo: Integração com o servidor de armazenamento de imagens do e-commerce.
 
 Padrões de Arquitetura
 
@@ -88,7 +86,7 @@ O padrão MVC (Model-View-Controller) será utilizado no frontend:
 - View: Interface gráfica com componentes React.
 - Controller: Lógica de interação, como manipulação de eventos de upload e arrastar/soltar.
 
-No backend, será adotada uma abordagem de Microserviços para a API, permitindo futura expansão para outras funcionalidades, como validação de imagens.
+No backend, será adotada uma abordagem Endpoints como /upload e /status seguem padrões RESTful para simplicidade.
 
 **Modelos C4**
 
@@ -98,23 +96,28 @@ Nível 1: Contexto
 
 Nível 2: Contêineres
 
-- Aplicação Web: Interface React para upload e gerenciamento de imagens.
-- API Gateway: Backend Node.js/Express para comunicação com o e-commerce.
-- Serviço de Armazenamento: Servidor do e-commerce (externo) para armazenamento de imagens.
+- Aplicação Web: React, via HTTPS.
+- API Gateway: Node.js/Express, HTTPS.
+- Serviço de Armazenamento: Servidor externo do e-commerce.
 
 Nível 3: Componentes
 
-- Componente de Upload: Gerencia a seleção e envio de arquivos.
-- Componente de Visualização: Exibe pré-visualizações e permite organização.
-- Componente de Notificação: Exibe mensagens de sucesso ou erro.
+- Upload: Usa FileReader para leitura de arquivos.
+- Visualização: Componente React para pré-visualizações.
+- Notificação: Exibe alertas com react-toastify.
 - API Client: Integra com a API do e-commerce.
 
-Nível 4: CódigoOs componentes React serão estruturados em arquivos JSX, com hooks para gerenciamento de estado (useState, useEffect). O backend usará rotas Express para endpoints como /upload e /status.
+Nível 4: Códigos: 
+
+Os componentes React serão estruturados em arquivos JSX, com hooks para gerenciamento de estado (useState, useEffect).
+
+Exemplo:
+app.post('/upload', (req, res) => {
+  // Lógica de upload
+  res.status(200).json({ message: 'Upload concluído' });
+});
 
 ## 3.3. Stack Tecnológica
-Linguagens de Programação: Justificativa para a escolha de linguagens específicas.
-Frameworks e Bibliotecas: Frameworks e bibliotecas a serem utilizados.
-Ferramentas de Desenvolvimento e Gestão de Projeto: Ferramentas para desenvolvimento e gestão do projeto. ... qualquer outra informação referente a stack tecnológica ...
 
 Linguagens de Programação
 
@@ -128,6 +131,8 @@ Frameworks e Bibliotecas
 - Tailwind CSS: Para estilização rápida e responsiva da interface.
 - Axios: Para chamadas HTTP à API do e-commerce.
 - React-DnD: Para funcionalidade de arrastar e soltar.
+- React Hook Form: Validação de formulários.
+- Jest: Testes unitários.
 
 Ferramentas de Desenvolvimento e Gestão de Projeto
 
@@ -151,19 +156,42 @@ Análise de Riscos
 
 Mitigações
 
-- Validação de Arquivos: Restringir uploads a formatos de imagem (JPEG, PNG, WEBP) e limitar o tamanho máximo a 5 MB por arquivo.
-- Limitação de Taxa (Rate Limiting): Implementar limitação de requisições na API para evitar sobrecarga.
-- Autenticação: Embora fora do escopo inicial, recomendar a integração com um sistema de autenticação (como OAuth ou JWT) para futuras iterações.
-- Sanitização de Entradas: Verificar e sanitizar todos os dados enviados pelo frontend para evitar injeção de código.
+- Validação de Arquivos: file-type para restringir a JPEG, PNG, WEBP (< 5 MB).
+- Rate Limiting: Limitar requisições na API.
+- Cabeçalhos HTTP: Implementar Content-Security-Policy contra XSS.
+- Sanitização: Verificar entradas no frontend e backend.
+- Privacidade: Remover metadados com bibliotecas como exif-js.
 
 ## 4. Próximos Passos
-Descrição dos passos seguintes após a conclusão do documento, com uma visão geral do cronograma para Portfólio I e II.
+| Fase                  | Atividade                                     | Prazo         |
+|-----------------------|----------------------------------------------|---------------|
+| **Portfólio I**       |                                              |               |
+| Prototipagem          | Desenvolvimento da UI com React              | 01/06/2025    |
+| Backend               | Implementação da API com Express             | 10/06/2025    |
+| Integração            | Conexão com API do e-commerce                | 15/06/2025    |
+| Testes Iniciais       | Testes unitários e de integração             | 30/06/2025    |
+| Deploy em Staging     | Implantação em ambiente de staging           | 05/07/2025    |
 
 ## 5. Referências
-Listagem de todas as fontes de pesquisa, frameworks, bibliotecas e ferramentas que serão utilizadas.
+Sommerville, I. (2018). Engenharia de Software, 10ª ed. Pearson.
+Nielsen Norman Group. (2023). E-commerce UX: The Impact of Visual Content.
+React Documentation. (2025). Disponível em: https://react.dev/.
+Node.js v20.10.0 Documentation. (2025). Disponível em: https://nodejs.org/.
+Tailwind CSS Documentation. (2025). Disponível em: https://tailwindcss.com/.
+Pressman, R., & Maxim, B. (2020). Software Engineering: A Practitioner's Approach, 9ª ed. McGraw-Hill.
+WCAG 2.1 Guidelines. (2025). Disponível em: https://www.w3.org/WAI/standards-guidelines/wcag/.
+Shopify Case Study: Image Optimization. (2024). Disponível em: https://shopify.dev/.
 
 ## 6. Apêndices (Opcionais)
-Informações complementares, dados de suporte ou discussões detalhadas fora do corpo principal.
+
+Wireframe (Descrição Textual)
+
+- Tela Principal: Barra superior com botão "Upload"; grade central com pré-visualizações (arrastar/soltar); botão "Enviar" no canto inferior direito.
+- Notificações: Pop-up no canto superior direito para sucesso/erro.
+
+Especificações da API
+- POST /upload: Envia imagens ao servidor. Parâmetros: images (array de base64). Resposta: { status: 'success', message: 'Upload concluído' }.
+- GET /status: Verifica status do upload. Resposta: { uploaded: number, failed: number }.
 
 ## 7. Avaliações de Professores
 Adicionar três páginas no final do RFC para que os Professores escolhidos possam fazer suas considerações e assinatura:
