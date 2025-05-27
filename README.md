@@ -37,7 +37,19 @@ Limitações:
 O projeto não abordará o desenvolvimento de um sistema completo de edição de imagens (como configurações de tamanho ou filtros), focando apenas na seleção e envio. Também não incluirá a criação de uma infraestrutura de armazenamento de imagens, assumindo que o e-commerce já possui um servidor ou banco de dados para essa finalidade. Por fim, questões relacionadas à segurança avançada, como criptografia de dados, serão exclusivas do escopo inicial, sendo consideradas como possíveis melhorias futuras.
 
 ## 3. Especificação Técnica
-Descrição detalhada da proposta, incluindo requisitos de software, protocolos, algoritmos, procedimentos, formatos de dados, etc.
+### Descrição Detalhada da Proposta
+
+O projeto E-coGram é uma aplicação web standalone para administradores de um e-commerce de varejo de moda, projetada para otimizar a seleção, organização e envio de imagens de produtos. A ferramenta será integrada ao sistema existente do e-commerce por meio de uma API RESTful, permitindo uploads eficientes e uma interface intuitiva. Os principais processos incluem:
+
+- Upload de Imagens: Seleção de múltiplas imagens em formatos JPEG, PNG ou WEBP, com validação de tipo e tamanho (< 5 MB).
+- Pré-visualização e Organização: Exibição de miniaturas com funcionalidade de arrastar e soltar para ordenação e categorização por tipo de produto (ex.: roupas, acessórios).
+- Envio ao Servidor: Transmissão das imagens para o servidor do e-commerce via API, com notificações de status.
+- Protocolos: Comunicação via HTTPS, utilizando requisições POST para envio de dados codificados em base64 e GET para verificação de status.
+- Formatos de Dados: Imagens são codificadas em base64 no frontend para envio e armazenadas no servidor do e-commerce no formato original (JPEG, PNG, WEBP).
+- Algoritmos: Validação de arquivos no backend com a biblioteca file-type para garantir formatos permitidos; ordenação de imagens no frontend com lógica de arrastar e soltar implementada via react-dnd.
+- Procedimentos: O administrador faz login (futuro sistema de autenticação), seleciona imagens, organiza-as, confirma o envio e recebe feedback sobre o sucesso ou falha do upload.
+
+A aplicação prioriza usabilidade, escalabilidade (até 100 usuários simultâneos) e compatibilidade com navegadores modernos (Chrome, Firefox, Safari, Edge).
 
 ## 3.1. Requisitos de Software
 
