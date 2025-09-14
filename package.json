@@ -2,11 +2,8 @@
   "name": "portifolio",
   "version": "1.0.0",
   "private": true,
-  "workspaces": [
-    "frontend",
-    "backend"
-  ],
   "scripts": {
     "install-all": "pnpm install"
   }
 }
+
