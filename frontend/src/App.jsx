@@ -1,10 +1,10 @@
-import Upload from './components/Upload';
+import UploadImage from './components/UploadImage';
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <Upload />
-    </div>
+    <main className="flex justify-center items-center min-h-screen bg-gray-100">
+      <UploadImage />
+    </main>
   );
 }
 
