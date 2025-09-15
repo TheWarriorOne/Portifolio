@@ -13,6 +13,10 @@ app.use(express.json());
 
 const upload = multer({ dest: 'uploads/' });
 
+app.get('/', (req, res) => {
+  res.json({ message: 'API E-coGram online' });
+});
+
 app.post('/upload', upload.single('file'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
