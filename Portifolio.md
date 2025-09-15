@@ -108,11 +108,12 @@ RNF01 – RNF10 (detalhados no documento original).
 | Fase            | Atividade                          | Prazo      |
 | --------------- | ---------------------------------- | ---------- |
 | Portfólio I     | Elaboração Documento RFC           | 10/07/2025 |
-| Prototipagem    | Desenvolvimento da UI com React    | 01/08/2025 |
-| Backend         | Implementação da API com Express   | 10/08/2025 |
-| Integração      | Conexão com API do e-commerce      | 15/08/2025 |
-| Testes Iniciais | Testes unitários e de integração   | 30/08/2025 |
-| Deploy Staging  | Implantação em ambiente de staging | 05/09/2025 |
+| Prototipagem    | Desenvolvimento da UI com React    | 01/09/2025 |
+| Frontend        | App React com Vite                 | 10/09/2025 |
+| Backend         | Implementação da API com Express   | 20/09/2025 |
+| Integração      | Conexão com API do e-commerce      | 10/10/2025 |
+| Testes Iniciais | Testes unitários e de integração   | 20/10/2025 |
+| Deploy Staging  | Implantação em ambiente de staging | 01/11/2025 |
 
 ---
 
