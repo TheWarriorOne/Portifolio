@@ -29,7 +29,9 @@ app.get('/', (req, res) => {
 app.post('/upload', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+    console.log('Campo recebido:', req.file); // Adiciona log para depuração
     const fileType = await fileTypeFromBuffer(req.file.buffer);
+    console.log('Tipo detectado:', fileType);
     if (!fileType || !fileType.mime.startsWith('image/')) {
       return res.status(400).json({ error: 'Arquivo não é uma imagem válida' });
     }
@@ -37,7 +39,7 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     fs.writeFileSync(`Uploads/${fileName}`, req.file.buffer);
     res.json({ message: 'Upload realizado com sucesso', fileName });
   } catch (err) {
-    console.error(err);
+    console.error('Erro no upload:', err);
     res.status(500).json({ error: 'Erro no upload' });
   }
 });

@@ -1,53 +1,44 @@
-import { useCallback, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useState } from 'react';
+import axios from 'axios';
 
-function Upload() {
+export default function UploadImage() {
+  const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
+  const [message, setMessage] = useState('');
 
-  const onDrop = useCallback(async (acceptedFiles) => {
-    const selectedFile = acceptedFiles[0];
-    setFile(selectedFile);
+  const handleFileChange = (e) => {
+    const selected = e.target.files[0];
+    setFile(selected);
+    setPreview(URL.createObjectURL(selected));
+  };
 
+  const handleUpload = async () => {
+    if (!file) return;
+    console.log('Enviando arquivo:', file); // Adiciona log para depuração
     const formData = new FormData();
-    formData.append('file', selectedFile);
-
+    formData.append('image', file);
     try {
-      const response = await fetch('http://localhost:3000/upload', {
-        method: 'POST',
-        body: formData,
+      const res = await axios.post('http://localhost:3000/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-      const result = await response.json();
-      console.log(result);
-    } catch (error) {
-      console.error('Upload failed:', error);
+      setMessage(res.data.message);
+    } catch (err) {
+      console.error('Erro:', err.response?.data);
+      setMessage('Erro no upload: ' + (err.response?.data?.error || err.message));
     }
-  }, []);
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  };
 
   return (
-    <div className="p-4">
-      <div
-        {...getRootProps()}
-        className="border-2 border-dashed border-gray-400 p-6 rounded-lg text-center"
+    <div className="p-6 flex flex-col items-center gap-4">
+      <input type="file" accept="image/*" onChange={handleFileChange} />
+      {preview && <img src={preview} alt="preview" className="max-h-64 rounded-xl" />}
+      <button
+        onClick={handleUpload}
+        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
       >
-        <input {...getInputProps()} />
-        {isDragActive ? (
-          <p className="text-blue-500">Solte o arquivo aqui...</p>
-        ) : (
-          <p className="text-gray-500">
-            Arraste e solte uma imagem (JPEG/PNG) ou clique para selecionar
-          </p>
-        )}
-      </div>
-      {file && (
-        <div className="mt-4">
-          <p>Arquivo selecionado: {file.name}</p>
-          <img src={URL.createObjectURL(file)} alt="Preview" className="mt-2 max-w-xs" />
-        </div>
-      )}
+        Enviar
+      </button>
+      {message && <p>{message}</p>}
     </div>
   );
 }
-
-export default Upload;
