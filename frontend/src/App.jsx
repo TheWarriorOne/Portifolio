@@ -1,14 +1,27 @@
-import UploadImage from './components/UploadImage';
-import Gallery from './components/Gallery';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import UploadImage from './components/UploadImage.jsx';
+import Gallery from './components/Gallery.jsx';
 
-function App() {
+export default function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) navigate('/'); // Redireciona para login se não autenticado
+  }, [navigate]);
+
   return (
-    <main className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-2xl font-bold mb-4 text-center">Portifolio – Gerenciador de Imagens</h1>
+    <div className="min-h-screen bg-gray-100 p-8">
+      <h1 className="text-3xl font-bold text-center mb-8">Portifolio</h1>
       <UploadImage />
       <Gallery />
-    </main>
+      <button
+        onClick={() => navigate('/busca')}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        Ir para Busca
+      </button>
+    </div>
   );
 }
-
-export default App;

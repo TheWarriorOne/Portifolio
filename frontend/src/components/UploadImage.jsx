@@ -4,6 +4,7 @@ import axios from 'axios';
 export default function UploadImage() {
   const [preview, setPreview] = useState(null);
   const [file, setFile] = useState(null);
+  const [codigo, setCodigo] = useState('');
   const [message, setMessage] = useState('');
 
   const handleFileChange = (e) => {
@@ -13,15 +14,19 @@ export default function UploadImage() {
   };
 
   const handleUpload = async () => {
-    if (!file) return;
-    console.log('Enviando arquivo:', file); // Adiciona log para depuração
+    if (!file || !codigo) {
+      setMessage('Selecione um arquivo e informe o código');
+      return;
+    }
     const formData = new FormData();
     formData.append('image', file);
+    formData.append('codigo', codigo);
     try {
       const res = await axios.post('http://localhost:3000/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setMessage(res.data.message);
+      window.dispatchEvent(new Event('imageUploaded'));
     } catch (err) {
       console.error('Erro:', err.response?.data);
       setMessage('Erro no upload: ' + (err.response?.data?.error || err.message));
@@ -30,6 +35,13 @@ export default function UploadImage() {
 
   return (
     <div className="p-6 flex flex-col items-center gap-4">
+      <input
+        type="text"
+        value={codigo}
+        onChange={(e) => setCodigo(e.target.value)}
+        placeholder="Código do produto"
+        className="w-full p-2 border rounded focus:outline-none focus:border-blue-500"
+      />
       <input type="file" accept="image/*" onChange={handleFileChange} />
       {preview && <img src={preview} alt="preview" className="max-h-64 rounded-xl" />}
       <button
