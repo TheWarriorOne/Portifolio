@@ -1,4 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  font-family: 'Poppins', sans-serif;
+}
+
+.login-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.login-card input {
+  border: none;
+  border-bottom: 2px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.login-card input:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+.login-card button {
+  background: #667eea;
+  color: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  transition: background 0.3s;
+}
+
+.login-card button:hover {
+  background: #5a67d8;
+}

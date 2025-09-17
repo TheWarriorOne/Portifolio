@@ -4,14 +4,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#f97316', // Laranja vibrante para botão
-        background: {
-          light: '#f3f4f6', // Cinza claro
-          gradient: 'linear-gradient(to right, #60a5fa, #a78bfa)', // Azul para lilás
-        },
+        primary: '#667eea', // Azul principal
+        primaryHover: '#5a67d8', // Azul mais escuro para hover
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
       },
     },
   },
