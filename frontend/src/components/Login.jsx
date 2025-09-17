@@ -10,15 +10,18 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Tentando login com:', { username, password }); // Log para depuração
     try {
       const res = await axios.post('http://localhost:3000/login', {
         username,
         password,
       });
+      console.log('Resposta do login:', res.data); // Log para depuração
       localStorage.setItem('token', res.data.token);
-      navigate('/busca');
+      navigate('/app');
     } catch (err) {
-      setError(err.response.data.error || 'Erro no login');
+      console.error('Erro no login:', err); // Log para depuração
+      setError(err.response?.data?.error || 'Erro no login');
     }
   };
 

@@ -13,7 +13,7 @@ export default function Busca() {
     if (!search) return;
     setLoading(true);
     try {
-      const res = await axios.get();
+      const res = await axios.get(`http://localhost:3000/products?search=${search}`);
       setResults(res.data);
     } catch (err) {
       console.error('Erro na busca:', err);
@@ -54,10 +54,10 @@ export default function Busca() {
                 {imgs.map((img) => (
                   <img
                     key={img}
-                    src={}
-                    alt={}
+                    src={`http://localhost:3000/uploads/${img}`}
+                    alt={`Imagem ${img}`}
                     className="w-32 h-32 object-cover rounded cursor-pointer"
-                    onClick={() => navigate()}
+                    onClick={() => navigate(`/produto/${codigo}/${img}`)}
                   />
                 ))}
               </div>
