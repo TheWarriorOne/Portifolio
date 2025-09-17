@@ -15,17 +15,14 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    console.log('Tentando login com:', { username, password });
     try {
       const res = await axios.post('http://localhost:3000/login', {
         username,
         password,
       });
-      console.log('Resposta do login:', res.data);
       localStorage.setItem('token', res.data.token);
-      navigate('/app');
+      navigate('/desicao');
     } catch (err) {
-      console.error('Erro no login:', err);
       setError(err.response?.data?.error || 'Erro ao fazer login');
     } finally {
       setLoading(false);
@@ -34,112 +31,157 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Lado esquerdo: Gradiente */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-r from-[#667eea] to-[#764ba2] items-center justify-center">
-        <div className="text-white text-center">
-          <h1 className="text-4xl font-bold">Portifolio</h1>
-          <p className="mt-2 text-lg font-medium">Gerencie suas imagens com facilidade</p>
+      {/* Estilo para animação de salto */}
+      <style>
+        {`
+          @keyframes jumpIn {
+            0% {
+              transform: scale(0.7);
+              opacity: 0;
+            }
+            50% {
+              transform: scale(1.1);
+              opacity: 1;
+            }
+            70% {
+              transform: scale(0.9);
+            }
+            100% {
+              transform: scale(1);
+            }
+          }
+          .animate-jump-in {
+            animation: jumpIn 0.4s ease-out;
+          }
+        `}
+      </style>
+      {/* Lado esquerdo: Gradiente e ilustração */}
+      <div className="w-1/2 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2]">
+        <div className="text-center text-white">
+          <h1 className="text-4xl font-bold mb-4">E-coGram</h1>
+          <p className="text-lg font-medium mb-8">Gerencie suas imagens com facilidade</p>
+          <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center">
+            <span className="text-6xl">📸</span>
+          </div>
         </div>
       </div>
       {/* Lado direito: Formulário */}
-      <div className="flex w-full lg:w-1/2 items-center justify-center">
-        <div className="w-full max-w-md login-card">
+      <div className="w-1/2 flex items-center justify-center">
+        <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800">Bem-vindo de volta!</h2>
-            <p className="text-gray-500 mt-2 font-medium">Faça login para continuar</p>
+            <h2 className="text-3xl font-bold text-gray-800 mb-2">Bem-vindo de volta!</h2>
+            <p className="text-gray-600 font-medium">Faça login para continuar</p>
           </div>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-8">
             {/* Campo Usuário */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-700">
+            <div className="mx-4">
+              <label 
+                htmlFor="username" 
+                className="block text-sm font-medium text-gray-700 mb-1 text-center"
+              >
                 Usuário
               </label>
-              <div className="relative mt-1">
-                <input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full p-3 text-gray-700"
-                  placeholder="Digite seu usuário"
-                  required
-                />
-              </div>
+              <input
+                id="username"
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="p-2 text-gray-700 border-b-2 border-gray-300 focus:border-primary focus:outline-none 
+                transition-colors duration-300 max-w-sm mx-auto block text-center"
+                placeholder="Digite seu usuário"
+                required
+              />
             </div>
             {/* Campo Senha */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+            <div className="mx-4 max-w-sm mx-auto">
+              <label 
+                htmlFor="password" 
+                className="block text-sm font-medium text-gray-700 mb-1 text-center"
+              >
                 Senha
               </label>
-              <div className="relative mt-1">
+              <div className="relative max-w-sm mx-auto">
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full p-3 text-gray-700"
+                  className="p-2 text-gray-700 border-b-2 border-gray-300 focus:border-primary focus:outline-none 
+                  transition-colors duration-300 pr-10 max-w-sm mx-auto block text-center"
                   placeholder="Digite sua senha"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
+                {password && (
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute top-1/2 left-1/2 translate-x-[calc(280%)] 
+                    -translate-y-1/2 text-gray-500 hover:text-primary"
+                  >
+                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                  </button>
+                )}
               </div>
             </div>
             {/* Ações */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-center mt-8 space-y-2 mb-6">
               <label className="flex items-center">
-                <input type="checkbox" className="h-4 w-4 text-primary focus:ring-primary" />
-                <span className="ml-2 text-sm text-gray-600 font-medium">Lembrar de mim</span>
+                <input 
+                  type="checkbox" 
+                  className="h-4 w-4 text-primary focus:ring-primary" 
+                />
+                <span className="ml-2 text-sm text-gray-600 font-medium">
+                  Lembrar de mim
+                </span>
               </label>
-              <a href="#" className="text-sm text-primary hover:underline font-medium">
+              <a 
+                href="#" 
+                className="text-sm text-primary hover:underline font-medium"
+              >
                 Esqueceu a senha?
               </a>
             </div>
-            {/* Erro */}
-            {error && <p className="text-red-500 text-sm text-center font-medium">{error}</p>}
-            {/* Botão Entrar */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full transition-transform transform hover:scale-105 disabled:bg-gray-400"
-            >
-              {loading ? 'Entrando...' : 'Entrar'}
-            </button>
+            <div className="botao-entrar"> {/* Substituído mt-12 por botao-entrar */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-primary text-white p-3 rounded-lg hover:bg-primaryHover 
+                transition-colors duration-300 transform hover:scale-105 disabled:bg-gray-400 
+                disabled:transform-none max-w-md mx-auto block text-center"
+              >
+                {loading ? 'Entrando...' : 'Entrar'}
+              </button>
+            </div>
           </form>
-          {/* Divisor */}
-          <div className="flex items-center my-6">
-            <div className="flex-grow border-t border-gray-300"></div>
-            <span className="mx-4 text-gray-500 text-sm font-medium">ou</span>
-            <div className="flex-grow border-t border-gray-300"></div>
-          </div>
-          {/* Login Social */}
-          <div className="flex justify-center gap-4">
-            <button className="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
-              <svg className="w-6 h-6" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.649,9.486-11.453H12.545z"
-                />
-              </svg>
-            </button>
-            <button className="p-2 bg-gray-200 rounded-full hover:bg-gray-300">
-              <svg className="w-6 h-6" viewBox="0 0 24 24">
-                <path
-                  fill="currentColor"
-                  d="M12,2C6.48,2,2,6.48,2,12c0,5.52,4.48,10,10,10s10-4.48,10-10C22,6.48,17.52,2,12,2z M9.9,18.55l-0.07-5.48h-1.7V10.1h1.7V8.24c0-1.71,1.04-2.64,2.56-2.64c0.73,0,1.36,0.05,1.54,0.07v1.78h-1.06c-0.83,0-0.99,0.39-0.99,0.97v1.27h1.98l-0.26,2.97h-1.72l0.07,5.48c-2.94-0.47-5.25-2.98-5.32-6.06C4.58,9.07,6.89,6.56,9.9,6.09V18.55z"
-                />
-              </svg>
-            </button>
-          </div>
+          {/* Pop-up de Erro no Estilo Windows */}
+          {error && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+              role="dialog"
+              aria-labelledby="error-title"
+            >
+              <div className="bg-gray-200 border-2 border-gray-400 max-w-sm w-full mx-4 animate-jump-in">
+                {/* Barra de título */}
+                <div className="bg-blue-600 text-white p-2 flex justify-between items-center">
+                  <h3 id="error-title" className="text-sm font-bold">Erro</h3>
+                </div>
+                {/* Conteúdo do modal */}
+                <div className="p-6">
+                  <p className="text-red-600 text-sm text-center font-medium mb-6">{error}</p>
+                  <button
+                    onClick={() => setError('')}
+                    className="w-full bg-gray-300 text-black p-2 border border-gray-400 hover:bg-gray-400 transition-colors duration-300"
+                  >
+                    OK
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Rodapé */}
-          <p className="text-center text-sm text-gray-500 mt-6 font-medium">
+          <p className="text-center text-sm text-gray-500 font-medium mt-6">
             Não tem conta?{' '}
-            <a href="#" className="text-primary hover:underline">
+            <a href="#" className="text-primary hover:underline font-medium">
               Criar conta
             </a>
           </p>

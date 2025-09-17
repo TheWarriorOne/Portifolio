@@ -7,5 +7,15 @@
   },
   "1758070407231-Teclado.jpg": {
     "codigo": "102031"
+  },
+  "1758118843426-Furadeira.jpg": {
+    "id": "102030",
+    "descricao": "Furadeira",
+    "grupo": "Ferramentas Eletricas"
+  },
+  "1758118966095-Batedeira2.jpg": {
+    "id": "102031",
+    "descricao": "Batedeira",
+    "grupo": "Eletrodoméstico"
   }
 }

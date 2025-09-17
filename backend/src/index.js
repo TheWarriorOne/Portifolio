@@ -20,7 +20,7 @@ app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../Uploads')));
 
 app.get('/', (req, res) => {
   res.json({ message: 'API Portifolio online' });
@@ -42,16 +42,16 @@ app.post('/upload', upload.single('image'), async (req, res) => {
     if (!fileType || !fileType.mime.startsWith('image/')) {
       return res.status(400).json({ error: 'Arquivo não é uma imagem válida' });
     }
-    const { codigo = 'default' } = req.body;
+    const { id = 'default', descricao = 'default', grupo = 'default' } = req.body;
     const fileName = Date.now() + '-' + req.file.originalname;
     const fullPath = `Uploads/${fileName}`;
     fs.writeFileSync(fullPath, req.file.buffer);
     // Salvar metadados
     const metadataPath = path.join(__dirname, '../Uploads/metadata.json');
     const metadata = fs.existsSync(metadataPath) ? JSON.parse(fs.readFileSync(metadataPath)) : {};
-    metadata[fileName] = { codigo };
+    metadata[fileName] = { id, descricao, grupo };
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-    res.json({ message: 'Upload realizado com sucesso', fileName, codigo });
+    res.json({ message: 'Upload realizado com sucesso', fileName, id, descricao, grupo });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro no upload' });
@@ -59,8 +59,8 @@ app.post('/upload', upload.single('image'), async (req, res) => {
 });
 
 app.get('/products', (req, res) => {
-  const { search } = req.query;
-  console.log('Busca por código:', search);
+  const { id, descricao, grupo } = req.query;
+  console.log('Busca por:', { id, descricao, grupo });
   const uploadsDir = path.join(__dirname, '../Uploads');
   const metadataPath = path.join(__dirname, '../Uploads/metadata.json');
   fs.readdir(uploadsDir, (err, files) => {
@@ -69,22 +69,36 @@ app.get('/products', (req, res) => {
       return res.status(500).json({ error: 'Não foi possível ler a pasta', details: err.message });
     }
     const metadata = fs.existsSync(metadataPath) ? JSON.parse(fs.readFileSync(metadataPath)) : {};
-    const grouped = files
+    const filteredFiles = files
       .filter(file => file !== 'metadata.json')
-      .reduce((acc, file) => {
-        const codigo = metadata[file]?.codigo || 'default';
-        if (!acc[codigo]) acc[codigo] = [];
-        acc[codigo].push(file);
-        return acc;
-      }, {});
-    const products = Object.entries(grouped).filter(([codigo]) => !search || codigo.includes(search));
-    console.log('Produtos agrupados:', products);
+      .filter(file => {
+        const meta = metadata[file] || {};
+        return (
+          (!id || meta.id?.toLowerCase().includes(id.toLowerCase())) &&
+          (!descricao || meta.descricao?.toLowerCase().includes(descricao.toLowerCase())) &&
+          (!grupo || meta.grupo?.toLowerCase().includes(grupo.toLowerCase()))
+        );
+      });
+    const grouped = filteredFiles.reduce((acc, file) => {
+      const meta = metadata[file] || { id: 'default' };
+      const key = meta.id || 'default';
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(file);
+      return acc;
+    }, {});
+    const products = Object.entries(grouped).map(([id, imgs]) => ({
+      id,
+      descricao: metadata[imgs[0]]?.descricao || 'Sem descrição',
+      grupo: metadata[imgs[0]]?.grupo || 'Sem grupo',
+      imagens: imgs,
+    }));
+    console.log('Produtos retornados:', products);
     res.json(products);
   });
 });
 
 app.delete('/images/:name', (req, res) => {
-  const filePath = path.join(__dirname, '../uploads', req.params.name);
+  const filePath = path.join(__dirname, '../Uploads', req.params.name);
   fs.unlink(filePath, (err) => {
     if (err) return res.status(500).json({ error: 'Erro ao deletar arquivo' });
     res.json({ message: 'Imagem deletada com sucesso' });

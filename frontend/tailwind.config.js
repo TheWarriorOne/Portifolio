@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#667eea', // Azul principal
-        primaryHover: '#5a67d8', // Azul mais escuro para hover
+        primary: '#667eea',
+        primaryHover: '#5a67d8',
       },
       fontFamily: {
         sans: ['Poppins', 'sans-serif'],

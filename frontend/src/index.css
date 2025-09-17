@@ -3,37 +3,31 @@
 @tailwind components;
 @tailwind utilities;
 
+.botao-entrar {
+  margin-top: 1rem;
+}
+
 body {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Calibri', sans-serif;
 }
 
-.login-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 40px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.login-card input {
-  border: none;
-  border-bottom: 2px solid #ccc;
-  transition: border-color 0.3s;
-}
-
-.login-card input:focus {
-  border-color: #667eea;
-  outline: none;
-}
-
-.login-card button {
-  background: #667eea;
-  color: #fff;
-  border-radius: 8px;
-  padding: 12px;
-  transition: background 0.3s;
-}
-
-.login-card button:hover {
-  background: #5a67d8;
+@layer utilities {
+  .bg-primary {
+    background-color: #667eea; /* Mesmo tom do gradiente em Login.jsx */
+  }
+  .hover\:bg-primaryHover:hover {
+    background-color: #5a67d8; /* Tom um pouco mais escuro para hover */
+  }
+  .text-primary {
+    color: #667eea;
+  }
+  .hover\:text-primary:hover {
+    color: #5a67d8;
+  }
+  .focus\:ring-primary {
+    --tw-ring-color: #667eea;
+  }
+  .focus\:border-primary {
+    border-color: #667eea;
+  }
 }
