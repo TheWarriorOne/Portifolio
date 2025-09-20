@@ -7,16 +7,20 @@
   margin-top: 1rem;
 }
 
+.botao-pesquisar {
+  margin-top: 1rem;
+}
+
 body {
   font-family: 'Calibri', sans-serif;
 }
 
 @layer utilities {
   .bg-primary {
-    background-color: #667eea; /* Mesmo tom do gradiente em Login.jsx */
+    background-color: #667eea;
   }
   .hover\:bg-primaryHover:hover {
-    background-color: #5a67d8; /* Tom um pouco mais escuro para hover */
+    background-color: #5a67d8;
   }
   .text-primary {
     color: #667eea;
@@ -29,5 +33,25 @@ body {
   }
   .focus\:border-primary {
     border-color: #667eea;
+  }
+  .animate-jump-in {
+    animation: jumpIn 0.4s ease-out;
+  }
+}
+
+@keyframes jumpIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
   }
 }

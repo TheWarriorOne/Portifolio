@@ -6,6 +6,10 @@ import { fileTypeFromBuffer } from 'file-type';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { connectDB } from './db.js';
+import Image from './models/Image.js';
+
+connectDB();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -35,66 +39,74 @@ app.post('/login', (req, res) => {
   }
 });
 
+// ===================== Rota de upload atualizada =====================
 app.post('/upload', upload.single('image'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+
     const fileType = await fileTypeFromBuffer(req.file.buffer);
     if (!fileType || !fileType.mime.startsWith('image/')) {
       return res.status(400).json({ error: 'Arquivo não é uma imagem válida' });
     }
+
     const { id = 'default', descricao = 'default', grupo = 'default' } = req.body;
     const fileName = Date.now() + '-' + req.file.originalname;
-    const fullPath = `Uploads/${fileName}`;
+    const fullPath = path.join(__dirname, '../Uploads', fileName);
+
+    // Salva a imagem na pasta Uploads
     fs.writeFileSync(fullPath, req.file.buffer);
-    // Salvar metadados
-    const metadataPath = path.join(__dirname, '../Uploads/metadata.json');
-    const metadata = fs.existsSync(metadataPath) ? JSON.parse(fs.readFileSync(metadataPath)) : {};
-    metadata[fileName] = { id, descricao, grupo };
-    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
-    res.json({ message: 'Upload realizado com sucesso', fileName, id, descricao, grupo });
+
+    // ================== Salva metadados no MongoDB ==================
+    const imageDoc = await Image.create({ fileName, id, descricao, grupo });
+
+    res.json({
+      message: 'Upload realizado com sucesso',
+      fileName,
+      id,
+      descricao,
+      grupo,
+      mongoId: imageDoc._id // Retorna o ID do Mongo
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro no upload' });
   }
 });
+// ==================================================================
 
-app.get('/products', (req, res) => {
-  const { id, descricao, grupo } = req.query;
-  console.log('Busca por:', { id, descricao, grupo });
-  const uploadsDir = path.join(__dirname, '../Uploads');
-  const metadataPath = path.join(__dirname, '../Uploads/metadata.json');
-  fs.readdir(uploadsDir, (err, files) => {
-    if (err) {
-      console.error('Erro ao ler pasta:', err);
-      return res.status(500).json({ error: 'Não foi possível ler a pasta', details: err.message });
-    }
-    const metadata = fs.existsSync(metadataPath) ? JSON.parse(fs.readFileSync(metadataPath)) : {};
-    const filteredFiles = files
-      .filter(file => file !== 'metadata.json')
-      .filter(file => {
-        const meta = metadata[file] || {};
-        return (
-          (!id || meta.id?.toLowerCase().includes(id.toLowerCase())) &&
-          (!descricao || meta.descricao?.toLowerCase().includes(descricao.toLowerCase())) &&
-          (!grupo || meta.grupo?.toLowerCase().includes(grupo.toLowerCase()))
-        );
-      });
-    const grouped = filteredFiles.reduce((acc, file) => {
-      const meta = metadata[file] || { id: 'default' };
-      const key = meta.id || 'default';
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(file);
+app.get('/products', async (req, res) => {
+  try {
+    const { id, descricao, grupo } = req.query;
+
+    // Cria filtro dinamicamente
+    const filter = {};
+    if (id) filter.id = { $regex: id, $options: "i" };
+    if (descricao) filter.descricao = { $regex: descricao, $options: "i" };
+    if (grupo) filter.grupo = { $regex: grupo, $options: "i" };
+
+    // Busca no MongoDB
+    const images = await Image.find(filter).sort({ createdAt: 1 });
+
+    // Agrupa por id
+    const grouped = images.reduce((acc, img) => {
+      if (!acc[img.id]) acc[img.id] = [];
+      acc[img.id].push(img);
       return acc;
     }, {});
+
+    // Formata resultado
     const products = Object.entries(grouped).map(([id, imgs]) => ({
       id,
-      descricao: metadata[imgs[0]]?.descricao || 'Sem descrição',
-      grupo: metadata[imgs[0]]?.grupo || 'Sem grupo',
-      imagens: imgs,
+      descricao: imgs[0].descricao,
+      grupo: imgs[0].grupo,
+      imagens: imgs.map(i => i.fileName)
     }));
-    console.log('Produtos retornados:', products);
+
     res.json(products);
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar produtos' });
+  }
 });
 
 app.delete('/images/:name', (req, res) => {

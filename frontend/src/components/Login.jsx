@@ -178,13 +178,6 @@ export default function Login() {
               </div>
             </div>
           )}
-          {/* Rodapé */}
-          <p className="text-center text-sm text-gray-500 font-medium mt-6">
-            Não tem conta?{' '}
-            <a href="#" className="text-primary hover:underline font-medium">
-              Criar conta
-            </a>
-          </p>
         </div>
       </div>
     </div>
