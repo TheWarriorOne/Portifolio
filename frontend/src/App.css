@@ -1,42 +1,54 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+/* Importação da fonte Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+/* Configurações Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+/* Estilos personalizados para o formulário de cadastro */
+.form-label {
+  font-size: 1rem; /* Tamanho da fonte do label */
+  margin-bottom: 0.5rem; /* Espaçamento inferior do label */
+  color: #4a5568; /* Cor do texto do label */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.form-input {
+  width: 100%; /* Largura padrão (100% do container) - ajuste com w- classes */
+  height: 2.5rem; /* Altura padrão - ajuste com h- classes */
+  padding: 0.5rem; /* Espaçamento interno */
+  border: 1px solid #e2e8f0; /* Borda */
+  border-radius: 0.375rem; /* Cantos arredondados */
+  font-size: 1rem; /* Tamanho da fonte do input */
+  transition: border-color 0.3s; /* Transição suave na borda */
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.form-input:focus {
+  outline: none; /* Remove o contorno padrão */
+  border-color: #667eea; /* Cor da borda ao focar */
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2); /* Sombra ao focar */
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Classes ajustáveis para largura (exemplos) */
+.w-custom-1 { width: 16rem; } /* 256px */
+.w-custom-2 { width: 20rem; } /* 320px */
+.w-custom-3 { width: 24rem; } /* 384px */
+
+/* Classes ajustáveis para altura (exemplos) */
+.h-custom-1 { height: 2rem; } /* 32px */
+.h-custom-2 { height: 3rem; } /* 48px */
+.h-custom-3 { height: 4rem; } /* 64px */
+
+/* Botões ajustáveis */
+.form-button {
+  padding: 0.75rem 1.0rem; /* Espaçamento interno dos botões */
+  border-radius: 0.375rem; /* Cantos arredondados */
+  font-size: 1rem; /* Tamanho da fonte */
+  transition: background-color 0.3s, transform 0.2s; /* Transições suaves */
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.form-button:hover {
+  transform: scale(1.05); /* Efeito de escala ao passar o mouse */
 }

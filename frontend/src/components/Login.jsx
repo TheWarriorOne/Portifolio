@@ -21,7 +21,7 @@ export default function Login() {
         password,
       });
       localStorage.setItem('token', res.data.token);
-      navigate('/desicao');
+      navigate('/decisao');
     } catch (err) {
       setError(err.response?.data?.error || 'Erro ao fazer login');
     } finally {

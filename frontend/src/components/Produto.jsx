@@ -58,7 +58,7 @@ export default function Produto() {
       {/* Cabeçalho */}
       <div className="flex justify-between items-center mb-8">
         <button
-          onClick={() => navigate('/desicao')}
+          onClick={() => navigate('/decisao')}
           className="submit-button flex items-center space-x-2"
         >
           <ArrowLeft size={20} />
