@@ -110,13 +110,13 @@ export default function App() {
             <div className="flex gap-4 mb-4">
               <button
                 onClick={handleUpload}
-                className="form-button bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                className="submit-button"
               >
                 Enviar
               </button>
               <button
                 onClick={handleClear}
-                className="form-button bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                className="submit-button"
               >
                 Limpar
               </button>
@@ -132,10 +132,10 @@ export default function App() {
           {previews.length === 0 ? (
             <p className="text-gray-500 text-center">Nenhuma imagem selecionada ainda.</p>
           ) : (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="preview-grid">
               {previews.map((preview, index) => (
-                <div key={index} className="relative">
-                  <img src={preview} alt={`Preview ${index}`} className="max-h-48 rounded-xl object-cover" />
+                <div key={index} className="relative preview-cell">
+                  <img src={preview} alt={`Preview ${index}`} className="preview-img" />
                   <button
                     onClick={() => removeImage(index)}
                     className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full hover:bg-red-600"
@@ -150,7 +150,7 @@ export default function App() {
       </div>
       <button
         onClick={() => navigate('/decisao')}
-        className="fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        className="fixed bottom-4 right-4 botao-voltar"
       >
         Voltar
       </button>

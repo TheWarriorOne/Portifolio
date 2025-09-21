@@ -12,7 +12,8 @@
 .form-label {
   font-size: 1rem; /* Tamanho da fonte do label */
   margin-bottom: 0.5rem; /* Espaçamento inferior do label */
-  color: #4a5568; /* Cor do texto do label */
+  color: hsl(218, 17%, 35%); /* Cor do texto do label */
+  margin-top: 0.5rem;
 }
 
 .form-input {
@@ -51,4 +52,49 @@
 
 .form-button:hover {
   transform: scale(1.05); /* Efeito de escala ao passar o mouse */
+}
+.submit-button {
+  background-color: var(--primary);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0.5rem;
+}
+
+.botao-voltar {
+  background-color: var(--primary);
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0.5rem;
+}
+
+.preview-img {
+  width: 180px;          /* largura fixa */
+  height: 180px;         /* altura fixa */
+  object-fit: cover;     /* mantém proporção e preenche o espaço */
+  border-radius: 0.75rem; /* opcional, arredondamento */
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;                /* espaço entre as células */
+  justify-items: center;    /* centraliza horizontalmente o conteúdo de cada célula */
+  align-items: center;      /* centraliza verticalmente (quando houver altura diferente) */
+}
+
+.preview-cell {
+  background: #f9fafb;
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }

@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
-import { useEffect } from 'react';
 import './Produto.css';
 
 export default function Produto() {
