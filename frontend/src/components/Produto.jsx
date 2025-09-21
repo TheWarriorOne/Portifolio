@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
+import { useEffect } from 'react';
+import './Produto.css';
 
 export default function Produto() {
   const navigate = useNavigate();
@@ -11,7 +13,12 @@ export default function Produto() {
   const [products, setProducts] = useState([]);
   const [error, setError] = useState('');
 
-  // busca produtos conforme filtros
+  // Modal
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalImgIndex, setModalImgIndex] = useState(0);
+  const [modalProductImgs, setModalProductImgs] = useState([]);
+
+  // Busca produtos
   const handleSearch = async (e) => {
     e.preventDefault();
     try {
@@ -31,121 +38,124 @@ export default function Produto() {
     }
   };
 
+  // Abre modal da galeria
+  const openModal = (images, index) => {
+    setModalProductImgs(images);
+    setModalImgIndex(index);
+    setModalOpen(true);
+  };
+
+  // Navegar imagens
+  const prevImage = () => {
+    setModalImgIndex((prev) => (prev === 0 ? modalProductImgs.length - 1 : prev - 1));
+  };
+  const nextImage = () => {
+    setModalImgIndex((prev) => (prev === modalProductImgs.length - 1 ? 0 : prev + 1));
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Cabeçalho */}
       <div className="flex justify-between items-center mb-8">
-        {/* Botão Voltar */}
         <button
-          onClick={() => navigate('/pesquisar')}
-          className="flex items-center space-x-2 text-primary hover:text-primaryHover font-medium"
+          onClick={() => navigate('/desicao')}
+          className="submit-button flex items-center space-x-2"
         >
           <ArrowLeft size={20} />
           <span>Voltar</span>
         </button>
-
-        {/* Logo / Nome */}
         <div className="text-right">
           <h1 className="text-3xl font-bold text-gray-800">E-coGram</h1>
           <p className="text-sm text-gray-500">Gerenciador de Imagens</p>
         </div>
       </div>
 
-      {/* Formulário de Pesquisa */}
+      {/* Formulário de pesquisa */}
       <form
         onSubmit={handleSearch}
-        className="bg-white rounded-xl shadow p-6 max-w-4xl mx-auto mb-10"
+        className="search-form"
       >
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div>
-            <label htmlFor="id" className="block text-sm font-medium text-gray-700 mb-1">
-              Código:
-            </label>
+        <div className="form-fields">
+          <div className="form-field">
+            <label htmlFor="id" className="form-label">Código:</label>
             <input
               id="id"
               type="text"
               value={id}
               onChange={(e) => setId(e.target.value)}
               placeholder="Digite o código"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="form-input"
             />
           </div>
-
-          <div>
-            <label htmlFor="descricao" className="block text-sm font-medium text-gray-700 mb-1">
-              Descrição:
-            </label>
+          <div className="form-field">
+            <label htmlFor="descricao" className="form-label">Descrição:</label>
             <input
               id="descricao"
               type="text"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               placeholder="Digite a descrição"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="form-input"
             />
           </div>
-
-          <div>
-            <label htmlFor="grupo" className="block text-sm font-medium text-gray-700 mb-1">
-              Grupo:
-            </label>
+          <div className="form-field">
+            <label htmlFor="grupo" className="form-label">Grupo:</label>
             <input
               id="grupo"
               type="text"
               value={grupo}
               onChange={(e) => setGrupo(e.target.value)}
               placeholder="Digite o grupo"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-primary"
+              className="form-input"
             />
           </div>
         </div>
-
-        <div className="text-center mt-6">
+        <div className="form-submit">
           <button
             type="submit"
-            className="bg-primary text-white px-6 py-2 rounded-lg hover:bg-primaryHover transition-colors duration-300"
+            className="submit-button"
           >
             Pesquisar
           </button>
         </div>
       </form>
 
-      {/* Resultado da Pesquisa */}
+      {/* Resultado */}
       <div className="max-w-6xl mx-auto">
-        {error && (
-          <p className="text-center text-red-600 font-medium mb-4">{error}</p>
-        )}
+        {error && <p className="text-center text-red-600 font-medium mb-4">{error}</p>}
 
         {products.length > 0 && (
-          <div className="overflow-x-auto bg-white rounded-xl shadow">
-            <table className="min-w-full border border-gray-200 text-sm">
+          <div className="overflow-x-auto max-w-6xl mx-auto bg-white rounded-xl shadow">
+            <table className="min-w-full divide-y divide-gray-200 text-sm">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="px-4 py-2 text-left">Código</th>
                   <th className="px-4 py-2 text-left">Descrição</th>
                   <th className="px-4 py-2 text-left">Grupo</th>
-                  <th className="px-4 py-2 text-left">Usuário</th>
-                  <th className="px-4 py-2 text-left">Data</th>
-                  <th className="px-4 py-2 text-left">Imagem</th>
+                  <th className="px-4 py-2 text-left">Imagens</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-gray-200">
                 {products.map((p) => (
-                  <tr key={p.id} className="border-t border-gray-200 hover:bg-gray-50">
+                  <tr key={p.id} className="hover:bg-gray-50">
                     <td className="px-4 py-2">{p.id}</td>
                     <td className="px-4 py-2">{p.descricao}</td>
                     <td className="px-4 py-2">{p.grupo}</td>
-                    <td className="px-4 py-2">{p.usuario_nome}</td>
                     <td className="px-4 py-2">
-                      {p.data ? new Date(p.data).toLocaleDateString('pt-BR') : ''}
-                    </td>
-                    <td className="px-4 py-2">
-                      {p.imagem && (
-                        <img
-                          src={`http://localhost:3000/uploads/${p.imagem}`}
-                          alt={p.descricao || 'Imagem'}
-                          className="h-20 rounded shadow"
-                        />
+                      {p.imagens && p.imagens.length > 0 ? (
+                        <div className="flex gap-2">
+                          {p.imagens.map((imgName, index) => (
+                            <img
+                              key={index}
+                              src={`http://localhost:3000/uploads/${imgName}`}
+                              alt={p.descricao || 'Imagem'}
+                              className="h-12 w-12 object-cover rounded border cursor-pointer"
+                              onClick={() => openModal(p.imagens, index)}
+                            />
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-400 text-xs">Sem imagem</span>
                       )}
                     </td>
                   </tr>
@@ -155,6 +165,39 @@ export default function Produto() {
           </div>
         )}
       </div>
+
+      {/* Modal da galeria */}
+      {modalOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
+          onClick={() => setModalOpen(false)}
+        >
+          <div className="relative flex items-center justify-center">
+            {/* Botão anterior */}
+            <button
+              className="absolute left-0 text-white p-2"
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+            >
+              <ChevronLeft size={30} />
+            </button>
+
+            <img
+              src={modalProductImgs[modalImgIndex]}
+              alt="Ampliação"
+              className="max-h-[50vh] max-w-[50vw] rounded shadow-lg object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Botão próximo */}
+            <button
+              className="absolute right-0 text-white p-2"
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+            >
+              <ChevronRight size={30} />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -8,6 +8,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectDB } from './db.js';
 import Image from './models/Image.js';
+import User from './models/User.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 connectDB();
 
@@ -30,14 +33,57 @@ app.get('/', (req, res) => {
   res.json({ message: 'API Portifolio online' });
 });
 
-app.post('/login', (req, res) => {
-  const { username, password } = req.body;
-  if (username === 'admin' && password === '123') {
-    res.json({ message: 'Login bem-sucedido', token: 'fake-jwt-token' });
-  } else {
-    res.status(401).json({ error: 'Credenciais inválidas' });
+app.post('/register', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
+
+    // checar se já existe
+    const exists = await User.findOne({ username });
+    if (exists) return res.status(400).json({ error: 'Usuário já existe' });
+
+    // hash da senha
+    const salt = bcrypt.genSaltSync(10);
+    const hash = bcrypt.hashSync(password, salt);
+
+    const user = await User.create({ username, password: hash });
+
+    console.log('Usuário criado:', user.username);
+    return res.json({ message: 'Usuário criado', id: user._id });
+  } catch (err) {
+    console.error('Erro no /register:', err);
+    return res.status(500).json({ error: 'Erro ao criar usuário' });
   }
 });
+
+// ROTA: login (consulta Mongo, compara senha e retorna token JWT)
+app.post('/login', async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
+
+    const user = await User.findOne({ username });
+    if (!user) return res.status(401).json({ error: 'Credenciais inválidas' });
+
+    // compara hash
+    const match = bcrypt.compareSync(password, user.password);
+    if (!match) return res.status(401).json({ error: 'Credenciais inválidas' });
+
+    // cria JWT simples
+    const token = jwt.sign(
+      { userId: user._id.toString(), username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    console.log('Login bem-sucedido:', user.username);
+    return res.json({ message: 'Login bem-sucedido', token });
+  } catch (err) {
+    console.error('Erro no /login:', err);
+    return res.status(500).json({ error: 'Erro no login' });
+  }
+});
+
 
 // ===================== Rota de upload atualizada =====================
 app.post('/upload', upload.single('image'), async (req, res) => {
