@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './components/Login.jsx';
 import Produto from './components/Produto.jsx';
 import App from './App.jsx';
-import Desicao from './components/Decisao.jsx';
+import Decisao from './components/Decisao.jsx';
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
