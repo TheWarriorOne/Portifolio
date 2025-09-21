@@ -18,24 +18,25 @@ export default function Produto() {
   const [modalProductImgs, setModalProductImgs] = useState([]);
 
   // Busca produtos
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    try {
-      const params = new URLSearchParams();
-      if (id) params.append('id', id);
-      if (descricao) params.append('descricao', descricao);
-      if (grupo) params.append('grupo', grupo);
+const handleSearch = async (e) => {
+  e.preventDefault();
+  try {
+    const params = new URLSearchParams();
+    if (id) params.append('id', id);
+    if (descricao) params.append('descricao', descricao);
+    if (grupo) params.append('grupo', grupo);
 
-      const res = await axios.get(`http://localhost:3000/products?${params.toString()}`);
-      const arr = Array.isArray(res.data) ? res.data : [];
-      setProducts(arr);
-      if (arr.length === 0) setError('Nenhum resultado encontrado.');
-      else setError('');
-    } catch (err) {
-      console.error(err);
-      setError(err.response?.data?.error || 'Erro ao buscar produtos.');
-    }
-  };
+    const res = await axios.get(`http://localhost:3000/products?${params.toString()}`);
+    const arr = Array.isArray(res.data) ? res.data : [];
+    console.log('Dados recebidos:', arr); // Depuração
+    setProducts(arr);
+    if (arr.length === 0) setError('Nenhum resultado encontrado.');
+    else setError('');
+  } catch (err) {
+    console.error('Erro na busca:', err);
+    setError(err.response?.data?.error || 'Erro ao buscar produtos.');
+  }
+};
 
   // Abre modal da galeria
   const openModal = (images, index) => {

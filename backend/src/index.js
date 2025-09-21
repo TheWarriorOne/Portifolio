@@ -85,39 +85,50 @@ app.post('/login', async (req, res) => {
 });
 
 
-// ===================== Rota de upload atualizada =====================
-app.post('/upload', upload.single('image'), async (req, res) => {
+/// ===================== Rota de upload atualizada =====================
+app.post('/upload', upload.array('images'), async (req, res) => {
   try {
-    if (!req.file) return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+    }
 
-    const fileType = await fileTypeFromBuffer(req.file.buffer);
-    if (!fileType || !fileType.mime.startsWith('image/')) {
-      return res.status(400).json({ error: 'Arquivo não é uma imagem válida' });
+    // Verifica se todos os arquivos são imagens
+    for (const file of req.files) {
+      const fileType = await fileTypeFromBuffer(file.buffer);
+      if (!fileType || !fileType.mime.startsWith('image/')) {
+        return res.status(400).json({ error: 'Um ou mais arquivos não são imagens válidas' });
+      }
     }
 
     const { id = 'default', descricao = 'default', grupo = 'default' } = req.body;
-    const fileName = Date.now() + '-' + req.file.originalname;
-    const fullPath = path.join(__dirname, '../Uploads', fileName);
+    const fileNames = req.files.map(file => {
+      const fileName = Date.now() + '-' + file.originalname;
+      const fullPath = path.join(__dirname, '../Uploads', fileName);
+      fs.writeFileSync(fullPath, file.buffer);
+      return fileName;
+    });
 
-    // Salva a imagem na pasta Uploads
-    fs.writeFileSync(fullPath, req.file.buffer);
-
-    // ================== Salva metadados no MongoDB ==================
-    const imageDoc = await Image.create({ fileName, id, descricao, grupo });
+    // Salva ou atualiza o produto com todas as imagens
+    const product = await Image.findOneAndUpdate(
+      { id },
+      { descricao, grupo, imagens: fileNames }, // Adiciona campo 'imagens' como array
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
     res.json({
       message: 'Upload realizado com sucesso',
-      fileName,
       id,
       descricao,
       grupo,
-      mongoId: imageDoc._id // Retorna o ID do Mongo
+      imagens: fileNames,
+      mongoId: product._id
     });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro no upload' });
   }
 });
+
 // ==================================================================
 
 app.get('/products', async (req, res) => {
@@ -133,20 +144,22 @@ app.get('/products', async (req, res) => {
     // Busca no MongoDB
     const images = await Image.find(filter).sort({ createdAt: 1 });
 
-    // Agrupa por id
+    // Agrupa por id e formata o resultado
     const grouped = images.reduce((acc, img) => {
-      if (!acc[img.id]) acc[img.id] = [];
-      acc[img.id].push(img);
+      if (!acc[img.id]) {
+        acc[img.id] = {
+          id: img.id,
+          descricao: img.descricao,
+          grupo: img.grupo,
+          imagens: []
+        };
+      }
+      acc[img.id].imagens.push(...img.imagens); // Adiciona todas as imagens do documento
       return acc;
     }, {});
 
-    // Formata resultado
-    const products = Object.entries(grouped).map(([id, imgs]) => ({
-      id,
-      descricao: imgs[0].descricao,
-      grupo: imgs[0].grupo,
-      imagens: imgs.map(i => i.fileName)
-    }));
+    // Converte o objeto agrupado em array
+    const products = Object.values(grouped);
 
     res.json(products);
   } catch (err) {
