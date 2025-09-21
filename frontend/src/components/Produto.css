@@ -256,13 +256,7 @@ button svg {
   height: 1.875rem;
 }
 
-img.max-h-\\[80vh\\].max-w-\\[80vw\\].rounded.shadow-lg.object-contain {
-  max-height: 80vh;
-  max-width: 80vw;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-lg);
-  object-fit: contain;
-}
+
 
 /* Botão de fechar no modal */
 button.close-modal {
