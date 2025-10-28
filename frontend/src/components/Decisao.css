@@ -1,0 +1,101 @@
+/* Estilos para o lado esquerdo - Gradiente */
+.bg-gradient-to-r {
+  background: linear-gradient(135deg, #667eea, #764ba2) !important; /* Gradiente suave */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.text-center.text-white p {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1.125rem !important;
+  font-weight: 500 !important;
+  color: white !important;
+  margin-bottom: 2rem !important;
+}
+
+/* Estilos para o lado direito - Container principal */
+.max-w-md {
+  padding: 2rem !important; /* Padding interno maior */
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  max-width: 28rem !important;
+  width: 100% !important;
+}
+
+/* Títulos e subtítulos do lado direito */
+.text-center.mb-8 h2 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1.875rem !important; /* Ajustado para harmonia */
+  font-weight: 800 !important;
+  color: #4b5563 !important;
+  margin-bottom: 0.5rem !important;
+}
+
+.text-center.mb-8 p {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  color: #6b7280 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Estilização dos botões principais */
+button.flex {
+  padding: 0.75rem 1.5rem !important;
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+  transition: all 0.3s ease !important;
+  width: 16rem !important; /* 64 unidades */
+}
+
+button.bg-blue-500 {
+  background: linear-gradient(135deg, #3b82f6, #2563eb) !important;
+  color: white !important;
+}
+
+button.bg-blue-500:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+}
+
+button.bg-green-500 {
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important;
+  color: white !important;
+}
+
+button.bg-green-500:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d) !important;
+  transform: translateY(-2px) scale(1.05) !important;
+}
+
+button.flex span {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+}
+
+button.flex svg {
+  color: white !important;
+}
+
+/* Estilização do rodapé */
+.text-center.text-sm {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+  margin-top: 2.5rem !important;
+}
+
+.text-center.text-sm a {
+  color: #667eea !important;
+  text-decoration: none !important;
+}
+
+.text-center.text-sm a:hover {
+  text-decoration: underline !important;
+}

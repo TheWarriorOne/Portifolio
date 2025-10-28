@@ -68,77 +68,78 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
-      {/* Lado esquerdo: Formulário de Cadastro */}
-      <div className="w-1/2 flex items-center justify-center">
-        <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Cadastro de Produto</h2>
-          <div className="flex flex-col gap-4">
-            <label className="form-label">Código (ID):</label>
+    <div className="app-min-h-screen app-flex app-bg-gray-100">
+      {/* Container centralizado */}
+      <div className="app-container app-animate-jump-in">
+        {/* Título */}
+        <div className="app-text-center app-mb-8">
+          <h2 className="app-text-3xl app-font-bold app-text-gray-800">Cadastro de Produto</h2>
+          <p className="app-text-gray-600 app-font-medium">Adicione um novo produto e suas imagens</p>
+        </div>
+
+        {/* Formulário de Cadastro */}
+        <div className="app-form-container">
+          <div className="app-flex app-flex-col app-gap-4">
+            <label className="app-form-label">Código (ID):</label>
             <input
               type="text"
               value={id}
               onChange={(e) => setId(e.target.value)}
               placeholder="ID do produto"
-              className="form-input w-custom-2 h-custom-2" // Ajuste largura e altura aqui
+              className="app-form-input"
               required
             />
-            <label className="form-label">Descrição:</label>
+            <label className="app-form-label">Descrição:</label>
             <input
               type="text"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               placeholder="Descrição do produto"
-              className="form-input w-custom-2 h-custom-2"
+              className="app-form-input"
             />
-            <label className="form-label">Grupo:</label>
+            <label className="app-form-label">Grupo:</label>
             <input
               type="text"
               value={grupo}
               onChange={(e) => setGrupo(e.target.value)}
               placeholder="Grupo do produto"
-              className="form-input w-custom-2 h-custom-2"
+              className="app-form-input"
             />
-            <label className="form-label">Upload de Imagens (selecione quantas quiser):</label>
+            <label className="app-form-label">Upload de Imagens (selecione quantas quiser):</label>
             <input
               type="file"
               accept="image/*"
               multiple
               onChange={handleFileChange}
-              className="form-input w-custom-2 h-custom-2"
+              className="app-form-input"
             />
-            <div className="flex gap-4 mb-4">
-              <button
-                onClick={handleUpload}
-                className="submit-button"
-              >
+            <div className="app-flex app-gap-4 app-mb-4">
+              <button onClick={handleUpload} className="app-submit-button">
                 Enviar
               </button>
-              <button
-                onClick={handleClear}
-                className="submit-button"
-              >
+              <button onClick={handleClear} className="app-submit-button">
                 Limpar
               </button>
             </div>
-            {message && <p className="mt-2 text-red-500">{message}</p>}
+            {message && <p className="app-text-red-500 app-mt-2">{message}</p>}
           </div>
         </div>
-      </div>
-      {/* Lado direito: Pré-visualização das Imagens */}
-      <div className="w-1/2 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2]">
-        <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 text-center">Pré-visualização das Imagens</h2>
+
+        {/* Pré-visualização das Imagens */}
+        <div className="app-preview-container">
+          <h3 className="app-text-2xl app-font-bold app-mb-4 app-text-gray-800 app-text-center">
+            Pré-visualização das Imagens
+          </h3>
           {previews.length === 0 ? (
-            <p className="text-gray-500 text-center">Nenhuma imagem selecionada ainda.</p>
+            <p className="app-text-gray-500 app-text-center">Nenhuma imagem selecionada ainda.</p>
           ) : (
-            <div className="preview-grid">
+            <div className="app-preview-grid">
               {previews.map((preview, index) => (
-                <div key={index} className="relative preview-cell">
-                  <img src={preview} alt={`Preview ${index}`} className="preview-img" />
+                <div key={index} className="app-preview-cell">
+                  <img src={preview} alt={`Preview ${index}`} className="app-preview-img" />
                   <button
                     onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded-full hover:bg-red-600"
+                    className="app-remove-button"
                   >
                     X
                   </button>
@@ -148,9 +149,11 @@ export default function App() {
           )}
         </div>
       </div>
+
+      {/* Botão Voltar */}
       <button
         onClick={() => navigate('/decisao')}
-        className="fixed bottom-4 right-4 botao-voltar"
+        className="app-botao-voltar"
       >
         Voltar
       </button>

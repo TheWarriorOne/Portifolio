@@ -322,3 +322,385 @@ button:focus, input:focus {
   outline: 2px solid var(--primary);
   outline-offset: 2px;
 }
+-----------------------------------------------------------------------------------------
+
+
+/* Configurações gerais */
+.produto-min-h-screen {
+  min-height: 100vh !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
+  position: relative !important; /* Contexto para posicionamento */
+}
+
+.produto-min-h-screen.produto-flex {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important; /* Alinha no topo */
+}
+
+/* Contêiner fixo para título e campo de busca */
+.produto-fixed-header {
+  position: fixed !important;
+  left: 0 !important;
+  width: 100% !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  padding: 1rem 2rem !important;
+  z-index: 900 !important; /* Acima do conteúdo, abaixo do botão */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Títulos e subtítulos */
+.produto-text-center.produto-mb-8 h2 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 3rem !important;
+  font-weight: 900 !important;
+  line-height: 0.9 !important;
+  color: #2d3748 !important;
+  margin-bottom: 0.5rem !important;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1) !important;
+  text-align: center !important;
+}
+
+.produto-text-center.produto-mb-8 p {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  color: #4a5568 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.produto-text-3xl {
+  font-size: 1.875rem !important;
+}
+
+/* Campo de busca */
+.produto-search-form {
+  padding: 0.5rem !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1) !important;
+  padding-top: 0 !important;
+  max-width: 98% !important; 
+  width: 100% !important;
+}
+
+.produto-form-input {
+  width: 100% !important;
+  height: 2.5rem !important;
+  padding: 0.75rem 2rem !important;
+  border: 1px solid rgba(102, 126, 234, 0.3) !important;
+  border-radius: 0.75rem !important;
+  font-size: 1.1rem !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(5px) !important;
+  color: #2d3748 !important;
+  transition: all 0.3s ease !important;
+}
+
+.produto-form-input:focus {
+  outline: none !important;
+  border-color: #764ba2 !important;
+  box-shadow: 0 0 0 3px rgba(118, 75, 162, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.02) !important;
+}
+
+/* Tabela de produtos */
+.produto-table-container {
+  overflow-y: auto !important; /* Habilita rolagem vertical */
+  margin-top: 9rem !important; /* Espaço para o cabeçalho fixo e campo de busca */
+  max-height: calc(100vh - 12rem) !important; /* Limita a altura para rolagem */
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 6px 18px rgba(102, 126, 234, 0.15) !important;
+  margin-bottom: 2rem !important;
+  padding-top: 0 !important; /* Remove padding superior */
+  max-width: 100% !important; /* Ocupa toda a largura disponível */
+  width: 100% !important; /* Garante uso total do espaço */
+}
+
+.produto-table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  font-size: 0.875rem !important;
+  table-layout: fixed !important; /* Garante largura fixa para colunas */
+}
+
+.produto-thead {
+  position: sticky !important;
+  top: 0 !important; /* Fixa no topo do contêiner */
+  background: linear-gradient(90deg, #667eea, #764ba2) !important;
+  z-index: 800 !important; /* Acima do tbody */
+}
+
+.produto-th {
+  padding: 0.75rem 1rem !important;
+  text-align: left !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2) !important;
+  /* Larguras ajustadas */
+  width: 15% !important; /* ID e Grupo */
+}
+
+.produto-th:nth-child(2) { /* Descrição */
+  width: 20% !important; /* Mantém um espaço razoável para descrição */
+}
+
+.produto-th:last-child { /* Coluna de Imagens */
+  width: 50% !important; /* Aumenta o espaço para imagens */
+}
+
+.produto-tbody {
+  display: table-row-group !important; /* Volta para comportamento padrão de tabela */
+  width: 100% !important; /* Garante que ocupe toda a largura */
+}
+
+.produto-tr {
+  display: table-row !important; /* Comportamento padrão de linha de tabela */
+  width: 100% !important;
+}
+
+.produto-td {
+  padding: 0.75rem 1rem !important;
+  color: #2d3748 !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  width: 15% !important; /* ID e Grupo */
+  box-sizing: border-box !important; /* Inclui padding na largura */
+  word-wrap: break-word !important; /* Quebra texto longo */
+}
+
+.produto-td:nth-child(2) { /* Descrição */
+  width: 20% !important; /* Mantém um espaço razoável */
+}
+
+.produto-td:last-child { /* Coluna de Imagens */
+  width: 50% !important; /* Mais espaço para imagens */
+}
+
+.produto-td .produto-flex.produto-gap-2 {
+  display: flex !important;
+  gap: 1rem !important; /* Espaçamento entre imagens */
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important; /* Imagens alinhadas à esquerda */
+}
+
+.produto-image-container {
+  display: flex !important;
+  align-items: flex-start !important; /* Alinha os quadradinhos ao topo da imagem */
+  margin-bottom: 1rem !important; /* Espaçamento entre grupos de imagem e ações */
+}
+
+.produto-image-actions {
+  display: flex !important;
+  flex-direction: column !important; /* Empilha os quadradinhos verticalmente */
+  gap: 0.5rem !important; /* Espaçamento entre os botões */
+  margin-left: 1rem !important; /* Espaço entre a imagem e os quadradinhos */
+}
+
+.produto-action-btn {
+  width: 2rem !important;
+  height: 2rem !important;
+  border: 1px solid #ccc !important;
+  border-radius: 0.25rem !important;
+  background-color: #fff !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.produto-approve {
+  color: #28a745 !important; /* Verde para aprovação */
+}
+
+.produto-approve:hover {
+  background-color: #28a745 !important;
+  color: #fff !important;
+}
+
+.produto-reject {
+  color: #dc3545 !important; /* Vermelho para reprovação */
+}
+
+.produto-reject:hover {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.produto-delete {
+  color: #6c757d !important; /* Cinza para exclusão */
+}
+
+.produto-delete:hover {
+  background-color: #6c757d !important;
+  color: #fff !important;
+}
+
+.produto-product-img {
+  width: 7rem !important; /* Imagens maiores */
+  height: 7rem !important;
+  object-fit: cover !important;
+  border-radius: 0.5rem !important;
+  border: 2px solid rgba(102, 126, 234, 0.3) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1) !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease !important;
+}
+
+.produto-product-img:hover {
+  transform: scale(1.05) !important;
+  box-shadow: 0 6px 12px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Botão Voltar */
+.produto-botao-voltar-top-left {
+  position: fixed !important;
+  top: 1rem !important;
+  left: 1rem !important;
+  padding: 0.75rem 1.5rem !important;
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+  z-index: 1000 !important; /* Garante que fique acima de tudo */
+}
+
+.produto-botao-voltar-top-left:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Modal */
+.produto-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0, 0, 0, 0.7) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 50 !important;
+}
+
+.produto-modal-content {
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 0.75rem !important;
+  padding: 1rem !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+}
+
+.produto-modal-img {
+  max-width: 90vw !important;
+  max-height: 90vh !important;
+  object-fit: contain !important;
+  border-radius: 0.5rem !important;
+  border: 2px solid rgba(102, 126, 234, 0.3) !important;
+}
+
+.produto-close-modal {
+  position: absolute !important;
+  top: -2rem !important;
+  right: -2rem !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 2rem !important;
+  height: 2rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  font-size: 1rem !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.produto-close-modal:hover {
+  background: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Mensagens */
+.produto-text-gray-500 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #4a5568 !important;
+  text-align: center !important;
+}
+
+.produto-text-red-500 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #dc2626 !important;
+  text-align: center !important;
+}
+
+/* Animação */
+@keyframes produto-jumpIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.produto-animate-jump-in {
+  animation: produto-jumpIn 0.4s ease-out !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .produto-container {
+    padding: 1rem !important;
+  }
+  .produto-text-3xl {
+    font-size: 1.5rem !important;
+  }
+  .produto-form-input {
+    height: 2.5rem !important;
+  }
+  .produto-botao-voltar-top-left {
+    padding: 0.5rem 1rem !important;
+    top: 0.5rem !important;
+    left: 0.5rem !important;
+  }
+  .produto-product-img {
+    width: 5rem !important;
+    height: 5rem !important;
+  }
+  .produto-modal-img {
+    max-width: 80vw !important;
+    max-height: 80vh !important;
+  }
+  .produto-th, .produto-td {
+    padding: 0.5rem !important;
+  }
+  .produto-fixed-header {
+    top: 3rem !important; /* Ajuste para telas menores */
+    padding: 0.5rem 1rem !important;
+  }
+  .produto-table-container {
+    margin-top: 10rem !important; /* Ajuste para telas menores */
+    max-height: calc(100vh - 10rem) !important;
+  }
+  .produto-tbody {
+    max-height: calc(100vh - 12rem) !important; /* Ajuste para telas menores */
+  }
+}

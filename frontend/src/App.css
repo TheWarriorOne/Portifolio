@@ -1,100 +1,221 @@
 /* Importação da fonte Poppins */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
 
-/* Configurações Tailwind */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-
-
-/* Estilos personalizados para o formulário de cadastro */
-.form-label {
-  font-size: 1rem; /* Tamanho da fonte do label */
-  margin-bottom: 0.5rem; /* Espaçamento inferior do label */
-  color: hsl(218, 17%, 35%); /* Cor do texto do label */
-  margin-top: 0.5rem;
+/* Configurações gerais */
+.app-min-h-screen {
+  min-height: 100vh !important;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%) !important;
 }
 
-.form-input {
-  width: 100%; /* Largura padrão (100% do container) - ajuste com w- classes */
-  height: 2.5rem; /* Altura padrão - ajuste com h- classes */
-  padding: 0.5rem; /* Espaçamento interno */
-  border: 1px solid #e2e8f0; /* Borda */
-  border-radius: 0.375rem; /* Cantos arredondados */
-  font-size: 1rem; /* Tamanho da fonte do input */
-  transition: border-color 0.3s; /* Transição suave na borda */
+.app-min-h-screen.app-flex {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
-.form-input:focus {
-  outline: none; /* Remove o contorno padrão */
-  border-color: #667eea; /* Cor da borda ao focar */
-  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2); /* Sombra ao focar */
+/* Container centralizado */
+.app-container {
+  width: 100% !important;
+  max-width: 48rem !important; /* Largura confortável */
+  padding: 2rem !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  border-radius: 1.5rem !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
-/* Classes ajustáveis para largura (exemplos) */
-.w-custom-1 { width: 16rem; } /* 256px */
-.w-custom-2 { width: 20rem; } /* 320px */
-.w-custom-3 { width: 24rem; } /* 384px */
-
-/* Classes ajustáveis para altura (exemplos) */
-.h-custom-1 { height: 2rem; } /* 32px */
-.h-custom-2 { height: 3rem; } /* 48px */
-.h-custom-3 { height: 4rem; } /* 64px */
-
-/* Botões ajustáveis */
-.form-button {
-  padding: 0.75rem 1.0rem; /* Espaçamento interno dos botões */
-  border-radius: 0.375rem; /* Cantos arredondados */
-  font-size: 1rem; /* Tamanho da fonte */
-  transition: background-color 0.3s, transform 0.2s; /* Transições suaves */
+/* Títulos e subtítulos */
+.app-text-center.app-mb-8 h2 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1.875rem !important;
+  font-weight: 800 !important;
+  color: #4b5563 !important;
+  margin-bottom: 0.5rem !important;
 }
 
-.form-button:hover {
-  transform: scale(1.05); /* Efeito de escala ao passar o mouse */
-}
-.submit-button {
-  background-color: var(--primary);
-  color: #ffffff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 0.5rem;
+.app-text-center.app-mb-8 p {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  color: #6b7280 !important;
+  margin-bottom: 1.5rem !important;
 }
 
-.botao-voltar {
-  background-color: var(--primary);
-  color: #ffffff;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  margin: 0.5rem;
+.app-text-2xl {
+  font-size: 1.5rem !important;
 }
 
-.preview-img {
-  width: 180px;          /* largura fixa */
-  height: 180px;         /* altura fixa */
-  object-fit: cover;     /* mantém proporção e preenche o espaço */
-  border-radius: 0.75rem; /* opcional, arredondamento */
+/* Formulário */
+.app-form-container {
+  padding: 1rem !important;
 }
 
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1rem;                /* espaço entre as células */
-  justify-items: center;    /* centraliza horizontalmente o conteúdo de cada célula */
-  align-items: center;      /* centraliza verticalmente (quando houver altura diferente) */
+.app-form-label {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
+  color: #4b5563 !important;
+  margin-bottom: 0.5rem !important;
 }
 
-.preview-cell {
-  background: #f9fafb;
-  border-radius: 0.75rem;
-  padding: 0.5rem;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+.app-form-input {
+  width: 100% !important;
+  height: 3rem !important;
+  padding: 0.75rem 1rem !important;
+  border: 1px solid rgba(203, 213, 225, 0.5) !important;
+  border-radius: 0.75rem !important;
+  font-size: 1rem !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(5px) !important;
+  color: #374151 !important;
+  transition: all 0.3s ease !important;
+}
+
+.app-form-input:focus {
+  outline: none !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.02) !important;
+}
+
+/* Botões */
+.app-submit-button {
+  padding: 0.75rem 1.5rem !important;
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3) !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.app-submit-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4) !important;
+}
+
+.app-botao-voltar {
+  position: fixed !important;
+  bottom: 1rem !important;
+  right: 1rem !important;
+  padding: 0.75rem 1.5rem !important;
+  background: linear-gradient(135deg, #667eea, #764ba2) !important;
+  color: white !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3) !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.app-botao-voltar:hover {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* Pré-visualização */
+.app-preview-container {
+  margin-top: 2rem !important;
+}
+
+.app-preview-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
+  gap: 1rem !important;
+  justify-items: center !important;
+  align-items: center !important;
+}
+
+.app-preview-cell {
+  background: #f9fafb !important;
+  border-radius: 0.75rem !important;
+  padding: 0.5rem !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+  position: relative !important;
+}
+
+.app-preview-img {
+  width: 180px !important;
+  height: 180px !important;
+  object-fit: cover !important;
+  border-radius: 0.75rem !important;
+}
+
+.app-remove-button {
+  position: absolute !important;
+  top: 0.5rem !important;
+  right: 0.5rem !important;
+  background: #dc2626 !important;
+  color: white !important;
+  padding: 0.25rem 0.5rem !important;
+  border-radius: 9999px !important;
+  font-size: 0.75rem !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
+}
+
+.app-remove-button:hover {
+  background: #b91c1c !important;
+}
+
+/* Mensagem de erro */
+.app-text-red-500 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #dc2626 !important;
+}
+
+/* Animação */
+@keyframes app-jumpIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.app-animate-jump-in {
+  animation: app-jumpIn 0.4s ease-out !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 1rem !important;
+    max-width: 90% !important;
+  }
+  .app-text-3xl {
+    font-size: 1.5rem !important;
+  }
+  .app-text-2xl {
+    font-size: 1.25rem !important;
+  }
+  .app-form-input {
+    height: 2.5rem !important;
+  }
+  .app-submit-button {
+    padding: 0.5rem 1rem !important;
+  }
+  .app-botao-voltar {
+    padding: 0.5rem 1rem !important;
+  }
+  .app-preview-img {
+    width: 150px !important;
+    height: 150px !important;
+  }
 }

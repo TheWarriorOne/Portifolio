@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Eye, EyeOff } from 'lucide-react';
+import './Login.css';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -58,65 +59,60 @@ export default function Login() {
       {/* Lado esquerdo: Gradiente e ilustração */}
       <div className="w-1/2 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2]">
         <div className="text-center text-white">
-          <h1 className="text-4xl font-bold mb-4">E-coGram</h1>
-          <p className="text-lg font-medium mb-8">Gerencie suas imagens com facilidade</p>
-          <div className="w-64 h-64 bg-white/20 rounded-full flex items-center justify-center">
-            <span className="text-6xl">📸</span>
+          <h1 className="animate-jump-in">
+            Bem vindo <br/> ao <br />E-coGram
+          </h1>
+          <p className="sub-title text-md font-medium mb-8">
+            Gerencie suas imagens com facilidade
+          </p>
+          <div>
+            <img src="/images/nova-imagem.jpg" alt="Ícone E-coGram" className="imgcapa" />
           </div>
         </div>
       </div>
-      {/* Lado direito: Formulário */}
-      <div className="w-1/2 flex items-center justify-center">
-        <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Bem-vindo de volta!</h2>
-            <p className="text-gray-600 font-medium">Faça login para continuar</p>
+          {/* Lado direito: Formulário */}
+      <div className="w-1/2 flex items-center justify-center bg-gray-50">
+        <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
+          <div className="text-center mb-6">
+            <h2 className="login-title">Login</h2> {/* Substitui text-3xl font-bold text-gray-800 mb-2 */}
+            <p className="login-subtitle">Entre para gerenciar suas imagens</p> {/* Substitui text-gray-500 text-sm */}
           </div>
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="login-form space-y-6">
             {/* Campo Usuário */}
             <div className="mx-4">
-              <label 
-                htmlFor="username" 
-                className="block text-sm font-medium text-gray-700 mb-1 text-center"
-              >
-                Usuário
+              <label htmlFor="username" className="login-label">
+                Seu Usuário
               </label>
               <input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="p-2 text-gray-700 border-b-2 border-gray-300 focus:border-primary focus:outline-none 
-                transition-colors duration-300 max-w-sm mx-auto block text-center"
-                placeholder="Digite seu usuário"
+                className="login-input"
+                placeholder="nome@mail.com.br"
                 required
               />
             </div>
             {/* Campo Senha */}
-            <div className="mx-4 max-w-sm mx-auto">
-              <label 
-                htmlFor="password" 
-                className="block text-sm font-medium text-gray-700 mb-1 text-center"
-              >
-                Senha
+            <div className="mx-4">
+              <label htmlFor="password" className="login-label">
+                Sua Senha
               </label>
-              <div className="relative max-w-sm mx-auto">
+              <div className="relative">
                 <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="p-2 text-gray-700 border-b-2 border-gray-300 focus:border-primary focus:outline-none 
-                  transition-colors duration-300 pr-10 max-w-sm mx-auto block text-center"
-                  placeholder="Digite sua senha"
+                  className="login-input"
+                  placeholder="1234"
                   required
                 />
                 {password && (
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute top-1/2 left-1/2 translate-x-[calc(280%)] 
-                    -translate-y-1/2 text-gray-500 hover:text-primary"
+                    className="password-toggle-btn absolute right-3 top-55% -translate-y-1/2 text-gray-500 hover:text-primary transition-colors duration-200 focus:outline-none"
                   >
                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>
@@ -124,60 +120,44 @@ export default function Login() {
               </div>
             </div>
             {/* Ações */}
-            <div className="flex flex-col items-center mt-8 space-y-2 mb-6">
-              <label className="flex items-center">
-                <input 
-                  type="checkbox" 
-                  className="h-4 w-4 text-primary focus:ring-primary" 
-                />
-                <span className="ml-2 text-sm text-gray-600 font-medium">
-                  Lembrar de mim
-                </span>
+            <div className="mx-4 login-actions">
+              <label className="flex items-center space-x-2">
+                <input type="checkbox" className="login-actions" />
+                <span className="login-actions">Lembrar de mim</span>
               </label>
-              <a 
-                href="#" 
-                className="text-sm text-primary hover:underline font-medium"
-              >
+              <a href="#" className="login-actions">
                 Esqueceu a senha?
               </a>
             </div>
-            <div className="botao-entrar"> {/* Substituído mt-12 por botao-entrar */}
+            <div className="botao-entrar mx-4">
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-primary text-white p-3 rounded-lg hover:bg-primaryHover 
-                transition-colors duration-300 transform hover:scale-105 disabled:bg-gray-400 
-                disabled:transform-none max-w-md mx-auto block text-center"
+                className="login-button"
               >
                 {loading ? 'Entrando...' : 'Entrar'}
               </button>
             </div>
           </form>
           {/* Pop-up de Erro no Estilo Windows */}
-          {error && (
-            <div 
-              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-              role="dialog"
-              aria-labelledby="error-title"
-            >
-              <div className="bg-gray-200 border-2 border-gray-400 max-w-sm w-full mx-4 animate-jump-in">
-                {/* Barra de título */}
-                <div className="bg-blue-600 text-white p-2 flex justify-between items-center">
-                  <h3 id="error-title" className="text-sm font-bold">Erro</h3>
-                </div>
-                {/* Conteúdo do modal */}
-                <div className="p-6">
-                  <p className="text-red-600 text-sm text-center font-medium mb-6">{error}</p>
-                  <button
-                    onClick={() => setError('')}
-                    className="w-full bg-gray-300 text-black p-2 border border-gray-400 hover:bg-gray-400 transition-colors duration-300"
-                  >
-                    OK
-                  </button>
+            {error && (
+              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
+                <div className="bg-gray-200 border-2 border-gray-400 max-w-sm w-full mx-auto animate-jump-in error-popup">
+                  <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-2 flex justify-center items-center rounded-t-lg">
+                    <h3 id="error-title" className="text-sm font-bold text-center">Erro</h3>
+                  </div>
+                  <div className="p-6 flex flex-col justify-center items-center">
+                    <p className="text-red-600 text-sm text-center font-medium mb-6">{error}</p>
+                    <button
+                      onClick={() => setError('')}
+                      className="w-full bg-gray-300 text-black p-2 border border-gray-400 hover:bg-gray-400 transition-colors duration-300 rounded-md shadow-md"
+                    >
+                      OK
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
+            )}            
         </div>
       </div>
     </div>

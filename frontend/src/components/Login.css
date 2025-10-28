@@ -1,0 +1,467 @@
+/* Importação da fonte Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700&display=swap');
+
+/* Configurações Tailwind */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Título Hero (Lado Esquerdo) */
+h1 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 4.5rem !important;
+  font-weight: 900 !important;
+  line-height: 0.9 !important;
+  letter-spacing: -0.05em !important;
+  color: white !important;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4) !important;
+  margin-bottom: 2rem !important;
+  animation: fadeInUp 1s ease-out !important;
+}
+
+/* Animação de Entrada */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Container Principal */
+.min-h-screen {
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+/* Container Principal (Ajuste para adicionar margem entre os lados) */
+.min-h-screen.flex {
+  gap: 2rem !important; /* Espaçamento de 2rem (32px) entre os containers */
+  justify-content: center !important; /* Garante que fiquem centralizados */
+}
+
+/* Mantém o resto do CSS do lado esquerdo e direito intacto */
+
+/* Lado Esquerdo - Gradiente Melhorado */
+.bg-gradient-to-r {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+
+
+/* Inputs - Estilo Melhorado */
+input {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  border-radius: 12px !important;
+  padding: 12px 16px !important;
+  transition: all 0.3s ease !important;
+}
+
+input:focus {
+  transform: scale(1.02);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.sub-title {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1.5rem !important; /* Menor que o h1 (4.5rem) */
+  font-weight: 600 !important;
+  line-height: 1.2 !important;
+  color: white !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3) !important;
+  margin-bottom: 2rem !important;
+  animation: fadeInUp 1s ease-out !important;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .sub-title {
+    font-size: 1.2rem !important;
+  }
+}
+
+.imgcapa {
+  width: 16rem;
+  height: 16rem;
+  object-fit: contain;
+  border-radius: 1rem; /* Arredondamento suave */
+}
+
+/* Estilos para a seção direita do formulário */
+.bg-gray-50 {
+  background: linear-gradient(135deg, #e0e7ff, #c7d2fe) !important; /* Gradiente suave para harmonia visual */
+}
+
+/* Estilos do formulário na seção direita */
+.login-form {
+  padding: 1rem !important; /* Margem interna para evitar colagem com bordas */
+  border-radius: 1rem !important; /* Arredondamento suave nas bordas */
+}
+
+/* Estilização dos rótulos do formulário */
+.login-label {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important; /* Tamanho consistente com o lado esquerdo */
+  font-weight: 600 !important;
+  color: #4b5563 !important; /* Tom de cinza escuro */
+  margin-bottom: 0.5rem !important;
+}
+
+/* Estilização das ações (checkbox e link) */
+.login-actions {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important; /* Espaçamento inferior antes do botão */
+}
+
+.login-actions a {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #667eea !important;
+  text-decoration: none !important;
+}
+
+.login-actions a:hover {
+  text-decoration: underline !important;
+}
+
+.login-actions input[type="checkbox"] {
+  height: 1.2rem !important;
+  width: 1.2rem !important;
+  border-radius: 0.25rem !important;
+  accent-color: #667eea !important;
+}
+
+.login-actions span {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+  font-weight: 500 !important;
+}
+
+/* Estilização do botão de entrada */
+.botao-entrar {
+  margin-top: 1.5rem !important; /* Margem superior para espaçar do formulário */
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+/* Regras responsivas */
+@media (max-width: 768px) {
+  .login-form {
+    padding: 0.5rem !important;
+  }
+  .login-label {
+    font-size: 0.75rem !important;
+  }
+  .login-actions {
+    margin-top: 0.75rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .botao-entrar {
+    margin-top: 1rem !important;
+  }
+}
+
+.max-w-md {
+  border-radius: 1.5rem !important;
+  overflow: hidden !important;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  max-width: 28rem !important; /* Aumenta para harmonizar com o lado esquerdo */
+  width: 100% !important; /* Ocupa toda largura disponível */
+  padding: 2rem !important; /* Padding interno aumentado */
+}
+
+/* Estilização específica dos inputs do login */
+input.login-input {
+  width: 100% !important;
+  height: 3rem !important;
+  padding: 0.75rem 4rem 0.75rem 1rem !important; /* Espaço à direita para o botão */
+  border: 1px solid rgba(203, 213, 225, 0.5) !important; /* Borda suave */
+  border-radius: 0.75rem !important;
+  font-size: 1rem !important;
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(5px) !important;
+  color: #374151 !important;
+  transition: all 0.3s ease !important;
+}
+
+input.login-input:focus {
+  outline: none !important;
+  border-color: #667eea !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  transform: scale(1.02) !important;
+}
+
+/* Estilização do botão de login */
+.login-button {
+  width: 100% !important;
+  padding: 0.75rem 1.5rem !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; /* Gradiente do lado esquerdo */
+  color: white !important;
+  border-radius: 0.75rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3) !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: all 0.3s ease !important;
+}
+
+.login-button:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.05) !important;
+  box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4) !important;
+}
+
+.login-button:disabled {
+  background: #d1d5db !important;
+  transform: none !important;
+}
+
+/* Checkbox e links nas ações */
+.login-actions a {
+  font-size: 0.875rem !important;
+  color: #667eea !important;
+  text-decoration: none !important;
+}
+
+.login-actions a:hover {
+  text-decoration: underline !important;
+}
+
+.login-actions input[type="checkbox"] {
+  height: 1.2rem !important;
+  width: 1.2rem !important;
+  border-radius: 0.25rem !important;
+  accent-color: #667eea !important;
+}
+
+/* Estilização do modal de erro */
+.bg-gray-200 {
+  border-radius: 0.75rem !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+.bg-blue-600 {
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+}
+
+/* Classe botao-entrar ajustada */
+.botao-entrar {
+  margin-top: 2rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+}
+
+/* Estilização dos títulos e subtítulos do lado direito */
+.login-title {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 2.5rem !important; /* Menor que o h1 do lado esquerdo */
+  font-weight: 800 !important;
+  line-height: 1.1 !important;
+  color: #4b5563 !important; /* Cinza escuro */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important; /* Sombra leve */
+  margin-bottom: 0.5rem !important;
+}
+
+.login-subtitle {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1rem !important; /* Menor que o sub-título do lado esquerdo */
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  color: #6b7280 !important; /* Cinza médio */
+  margin-bottom: 1.5rem !important;
+}
+
+/* Regras responsivas adicionais */
+@media (max-width: 768px) {
+  .login-title {
+    font-size: 2rem !important;
+  }
+  .login-subtitle {
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Container relativo para o input de senha */
+.relative {
+  position: relative !important;
+  display: block !important;
+  width: 100% !important;
+  height: 3.5rem !important; /* Altura para alinhar o botão */
+}
+
+/* Estilo para o botão do ícone de senha (reforçado) */
+.password-toggle-btn {
+  padding: 0.25rem !important; /* Espaçamento interno */
+  background: rgba(255, 255, 255, 0.5) !important; /* Fundo sutil para destacar */
+  border: none !important; /* Remove a borda explicitamente */
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  z-index: 30 !important; /* Prioridade acima do input */
+  position: absolute !important;
+  right: 0.75rem !important; /* Distância da borda direita */
+  top: 78% !important; /* Deslocamento para baixo */
+  transform: translateY(-50%) !important; /* Centralização relativa */
+  border-radius: 0.25rem !important; /* Arredondamento leve */
+  transition: all 0.2s ease !important;
+}
+
+.password-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #667eea !important; /* Cor roxa no hover */
+}
+
+.password-toggle-btn:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2) !important;
+}
+
+/* Remove interferência do padding do formulário */
+.login-form .mx-4 .relative {
+  padding: 0 !important;
+}
+
+/* Estilização do pop-up de erro */
+.error-popup {
+  border-radius: 0.75rem !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(10px) !important;
+  overflow: hidden !important;
+  max-width: 24rem !important;
+  width: 90% !important;
+  z-index: 1001 !important; /* Garante sobreposição */
+  min-height: 12rem !important; /* Altura mínima definida */
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0 auto !important; /* Centraliza horizontalmente */
+}
+
+/* Cabeçalho do pop-up */
+.bg-gradient-to-r {
+  border-radius: 0.75rem 0.75rem 0 0 !important;
+  padding: 0.5rem 1rem !important;
+  text-align: center !important; /* Centraliza o conteúdo do cabeçalho */
+}
+
+/* Título do erro */
+#error-title {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  color: white !important;
+  width: 100% !important; /* Garante que ocupe toda a largura */
+  text-align: center !important; /* Centraliza o texto */
+}
+
+/* Corpo do pop-up */
+.p-6 {
+  padding: 1.5rem !important;
+  flex-grow: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important; /* Centraliza horizontalmente o conteúdo */
+}
+
+/* Texto do erro */
+.text-red-600 {
+  font-family: 'Inter', 'Poppins', sans-serif !important;
+  font-size: 0.875rem !important;
+  color: #dc2626 !important;
+  margin-bottom: 1.5rem !important;
+}
+
+/* Botão OK */
+button.w-full {
+  padding: 0.75rem !important;
+  font-weight: 600 !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  background: linear-gradient(90deg, #e5e7eb, #d1d5db) !important;
+  width: 100% !important;
+  margin-top: auto !important;
+}
+
+button.w-full:hover {
+  background: linear-gradient(90deg, #d1d5db, #e5e7eb) !important;
+}
+
+/* Animação ajustada */
+@keyframes jumpIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-jump-in {
+  animation: jumpIn 0.4s ease-out !important;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .error-popup {
+    width: 85% !important;
+    max-width: 20rem !important;
+    min-height: 10rem !important;
+  }
+  .p-6 {
+    padding: 1rem !important;
+  }
+  button.w-full {
+    padding: 0.5rem !important;
+  }
+}
+
+/* Animação ajustada */
+@keyframes jumpIn {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-jump-in {
+  animation: jumpIn 0.4s ease-out !important;
+}

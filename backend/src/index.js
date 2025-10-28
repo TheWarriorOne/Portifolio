@@ -38,11 +38,9 @@ app.post('/register', async (req, res) => {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
 
-    // checar se já existe
     const exists = await User.findOne({ username });
     if (exists) return res.status(400).json({ error: 'Usuário já existe' });
 
-    // hash da senha
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
 
@@ -56,7 +54,6 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// ROTA: login (consulta Mongo, compara senha e retorna token JWT)
 app.post('/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -65,11 +62,9 @@ app.post('/login', async (req, res) => {
     const user = await User.findOne({ username });
     if (!user) return res.status(401).json({ error: 'Credenciais inválidas' });
 
-    // compara hash
     const match = bcrypt.compareSync(password, user.password);
     if (!match) return res.status(401).json({ error: 'Credenciais inválidas' });
 
-    // cria JWT simples
     const token = jwt.sign(
       { userId: user._id.toString(), username: user.username },
       process.env.JWT_SECRET,
@@ -84,15 +79,12 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
-/// ===================== Rota de upload atualizada =====================
 app.post('/upload', upload.array('images'), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
 
-    // Verifica se todos os arquivos são imagens
     for (const file of req.files) {
       const fileType = await fileTypeFromBuffer(file.buffer);
       if (!fileType || !fileType.mime.startsWith('image/')) {
@@ -105,13 +97,12 @@ app.post('/upload', upload.array('images'), async (req, res) => {
       const fileName = Date.now() + '-' + file.originalname;
       const fullPath = path.join(__dirname, '../Uploads', fileName);
       fs.writeFileSync(fullPath, file.buffer);
-      return fileName;
+      return { name: fileName, approved: false, rejected: false }; // Adiciona status inicial
     });
 
-    // Salva ou atualiza o produto com todas as imagens
     const product = await Image.findOneAndUpdate(
       { id },
-      { descricao, grupo, imagens: fileNames }, // Adiciona campo 'imagens' como array
+      { descricao, grupo, imagens: fileNames },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
@@ -129,22 +120,17 @@ app.post('/upload', upload.array('images'), async (req, res) => {
   }
 });
 
-// ==================================================================
-
 app.get('/products', async (req, res) => {
   try {
     const { id, descricao, grupo } = req.query;
 
-    // Cria filtro dinamicamente
     const filter = {};
-    if (id) filter.id = { $regex: id, $options: "i" };
-    if (descricao) filter.descricao = { $regex: descricao, $options: "i" };
-    if (grupo) filter.grupo = { $regex: grupo, $options: "i" };
+    if (id) filter.id = { $regex: id, $options: 'i' };
+    if (descricao) filter.descricao = { $regex: descricao, $options: 'i' };
+    if (grupo) filter.grupo = { $regex: grupo, $options: 'i' };
 
-    // Busca no MongoDB
     const images = await Image.find(filter).sort({ createdAt: 1 });
 
-    // Agrupa por id e formata o resultado
     const grouped = images.reduce((acc, img) => {
       if (!acc[img.id]) {
         acc[img.id] = {
@@ -154,11 +140,10 @@ app.get('/products', async (req, res) => {
           imagens: []
         };
       }
-      acc[img.id].imagens.push(...img.imagens); // Adiciona todas as imagens do documento
+      acc[img.id].imagens.push(...img.imagens);
       return acc;
     }, {});
 
-    // Converte o objeto agrupado em array
     const products = Object.values(grouped);
 
     res.json(products);
@@ -168,11 +153,58 @@ app.get('/products', async (req, res) => {
   }
 });
 
+app.post('/approve', async (req, res) => {
+  try {
+    const { productId, imageName } = req.body;
+    const product = await Image.findOne({ id: productId });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    product.imagens = product.imagens.map(img =>
+      img.name === imageName ? { ...img, approved: true, rejected: false } : img
+    );
+    await product.save();
+
+    res.json({ message: 'Imagem aprovada com sucesso', product });
+  } catch (err) {
+    console.error('Erro ao aprovar imagem:', err);
+    res.status(500).json({ error: 'Erro ao aprovar imagem' });
+  }
+});
+
+app.post('/reject', async (req, res) => {
+  try {
+    const { productId, imageName } = req.body;
+    const product = await Image.findOne({ id: productId });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    product.imagens = product.imagens.map(img =>
+      img.name === imageName ? { ...img, rejected: true, approved: false } : img
+    );
+    await product.save();
+
+    res.json({ message: 'Imagem rejeitada com sucesso', product });
+  } catch (err) {
+    console.error('Erro ao rejeitar imagem:', err);
+    res.status(500).json({ error: 'Erro ao rejeitar imagem' });
+  }
+});
+
 app.delete('/images/:name', (req, res) => {
   const filePath = path.join(__dirname, '../Uploads', req.params.name);
   fs.unlink(filePath, (err) => {
     if (err) return res.status(500).json({ error: 'Erro ao deletar arquivo' });
-    res.json({ message: 'Imagem deletada com sucesso' });
+
+    // Remove a imagem do banco de dados
+    Image.updateMany(
+      {},
+      { $pull: { imagens: { name: req.params.name } } },
+      { multi: true }
+    ).then(() => {
+      res.json({ message: 'Imagem deletada com sucesso' });
+    }).catch((err) => {
+      console.error('Erro ao atualizar banco:', err);
+      res.status(500).json({ error: 'Erro ao atualizar banco de dados' });
+    });
   });
 });
 

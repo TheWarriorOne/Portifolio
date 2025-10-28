@@ -1,199 +1,224 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-react';
 import axios from 'axios';
-import './Produto.css';
+import './Produto.css'; // Apenas o Produto.css
 
 export default function Produto() {
   const navigate = useNavigate();
-  const [id, setId] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [grupo, setGrupo] = useState('');
   const [products, setProducts] = useState([]);
-  const [error, setError] = useState('');
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true); // Estado para loading
+  const [error, setError] = useState(null); // Estado para erros
 
-  // Modal
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalImgIndex, setModalImgIndex] = useState(0);
-  const [modalProductImgs, setModalProductImgs] = useState([]);
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/');
+      return; // Sai do useEffect se não autenticado
+    }
 
-  // Busca produtos
-const handleSearch = async (e) => {
-  e.preventDefault();
-  try {
-    const params = new URLSearchParams();
-    if (id) params.append('id', id);
-    if (descricao) params.append('descricao', descricao);
-    if (grupo) params.append('grupo', grupo);
+    // Chamada real à API
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get('http://localhost:3000/products', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log('Resposta da API:', res.data); // Log completo da resposta
+        if (Array.isArray(res.data)) {
+          setProducts(res.data); // Define os produtos apenas se for array
+        } else {
+          console.error('Dados da API não são um array:', res.data);
+          setProducts([]);
+        }
+      } catch (err) {
+        console.error('Erro ao carregar produtos:', err.response ? err.response.data : err.message);
+        setError('Erro ao carregar produtos. Verifique o servidor ou a conexão.');
+      } finally {
+        setLoading(false); // Finaliza o loading
+      }
+    };
+    fetchProducts();
+  }, [navigate]);
 
-    const res = await axios.get(`http://localhost:3000/products?${params.toString()}`);
-    const arr = Array.isArray(res.data) ? res.data : [];
-    console.log('Dados recebidos:', arr); // Depuração
-    setProducts(arr);
-    if (arr.length === 0) setError('Nenhum resultado encontrado.');
-    else setError('');
-  } catch (err) {
-    console.error('Erro na busca:', err);
-    setError(err.response?.data?.error || 'Erro ao buscar produtos.');
-  }
-};
-
-  // Abre modal da galeria
-  const openModal = (images, index) => {
-    setModalProductImgs(images);
-    setModalImgIndex(index);
-    setModalOpen(true);
+  const handleImageClick = (imageUrl) => {
+    setSelectedImage(imageUrl);
   };
 
-  // Navegar imagens
-  const prevImage = () => {
-    setModalImgIndex((prev) => (prev === 0 ? modalProductImgs.length - 1 : prev - 1));
+  const closeModal = () => {
+    setSelectedImage(null);
   };
-  const nextImage = () => {
-    setModalImgIndex((prev) => (prev === modalProductImgs.length - 1 ? 0 : prev + 1));
+
+  const handleApprove = async (productId, imageName) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `http://localhost:3000/approve`,
+        { productId, imageName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Atualiza o estado local após aprovação (se necessário)
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === productId ? { ...p, imagens: p.imagens.map(i => i === imageName ? { ...i, approved: true } : i) } : p
+        )
+      );
+    } catch (err) {
+      console.error('Erro ao aprovar imagem:', err);
+      setError('Erro ao aprovar imagem.');
+    }
+  };
+
+  const handleReject = async (productId, imageName) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post(
+        `http://localhost:3000/reject`,
+        { productId, imageName },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      // Atualiza o estado local após reprovação (se necessário)
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === productId ? { ...p, imagens: p.imagens.map(i => i === imageName ? { ...i, rejected: true } : i) } : p
+        )
+      );
+    } catch (err) {
+      console.error('Erro ao rejeitar imagem:', err);
+      setError('Erro ao rejeitar imagem.');
+    }
+  };
+
+  const handleDelete = async (productId, imageName) => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`http://localhost:3000/images/${imageName}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Atualiza o estado local removendo a imagem
+      setProducts((prevProducts) =>
+        prevProducts.map((p) =>
+          p.id === productId
+            ? { ...p, imagens: p.imagens.filter((i) => i !== imageName) }
+            : p
+        ).filter((p) => p.imagens.length > 0) // Remove o produto se não houver mais imagens
+      );
+    } catch (err) {
+      console.error('Erro ao deletar imagem:', err);
+      setError('Erro ao deletar imagem.');
+    }
+  };
+
+  const filteredProducts = products.filter((product) =>
+    product.id?.toString().includes(searchTerm) ||
+    product.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Função para construir a URL da imagem
+  const getImageUrl = (imageName) => {
+    return `http://localhost:3000/uploads/${imageName}`; // Ajuste o caminho conforme necessário
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Cabeçalho */}
-      <div className="flex justify-between items-center mb-8">
-        <button
-          onClick={() => navigate('/decisao')}
-          className="submit-button flex items-center space-x-2"
-        >
-          <ArrowLeft size={20} />
-          <span>Voltar</span>
-        </button>
-        <div className="text-right">
-          <h1 className="text-3xl font-bold text-gray-800">E-coGram</h1>
-          <p className="text-sm text-gray-500">Gerenciador de Imagens</p>
+    <div className="produto-min-h-screen produto-flex produto-bg-gray-100" style={{ position: 'relative' }}>
+      {/* Botão Voltar fixo no canto superior esquerdo */}
+      <button onClick={() => navigate('/decisao')} className="produto-botao-voltar-top-left">
+        Voltar
+      </button>
+
+      {/* Contêiner fixo para título e campo de busca */}
+      <div className="produto-fixed-header">
+        <div className="produto-text-center produto-mb-8">
+          <h2 className="produto-text-3xl produto-font-bold produto-text-gray-800">E-coGram</h2>
+        </div>
+        <div className="produto-search-form">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Pesquisar por ID ou descrição"
+            className="produto-form-input"
+          />
         </div>
       </div>
 
-      {/* Formulário de pesquisa */}
-      <form
-        onSubmit={handleSearch}
-        className="search-form"
-      >
-        <div className="form-fields">
-          <div className="form-field">
-            <label htmlFor="id" className="form-label">Código:</label>
-            <input
-              id="id"
-              type="text"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              placeholder="Digite o código"
-              className="form-input"
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="descricao" className="form-label">Descrição:</label>
-            <input
-              id="descricao"
-              type="text"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              placeholder="Digite a descrição"
-              className="form-input"
-            />
-          </div>
-          <div className="form-field">
-            <label htmlFor="grupo" className="form-label">Grupo:</label>
-            <input
-              id="grupo"
-              type="text"
-              value={grupo}
-              onChange={(e) => setGrupo(e.target.value)}
-              placeholder="Digite o grupo"
-              className="form-input"
-            />
-          </div>
-        </div>
-        <div className="form-submit">
-          <button
-            type="submit"
-            className="submit-button"
-          >
-            Pesquisar
-          </button>
-        </div>
-      </form>
-
-      {/* Resultado */}
-      <div className="max-w-6xl mx-auto">
-        {error && <p className="text-center text-red-600 font-medium mb-4">{error}</p>}
-
-        {products.length > 0 && (
-          <div className="overflow-x-auto max-w-6xl mx-auto bg-white rounded-xl shadow">
-            <table className="min-w-full divide-y divide-gray-200 text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-4 py-2 text-left">Código</th>
-                  <th className="px-4 py-2 text-left">Descrição</th>
-                  <th className="px-4 py-2 text-left">Grupo</th>
-                  <th className="px-4 py-2 text-left">Imagens</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200">
-                {products.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2">{p.id}</td>
-                    <td className="px-4 py-2">{p.descricao}</td>
-                    <td className="px-4 py-2">{p.grupo}</td>
-                    <td className="px-4 py-2">
-                      {p.imagens && p.imagens.length > 0 ? (
-                        <div className="flex gap-2">
-                          {p.imagens.map((imgName, index) => (
+      {/* Tabela de produtos com cabeçalho fixo e corpo rolável */}
+      <div className="produto-table-container">
+        {loading ? (
+          <p className="produto-text-gray-500 produto-text-center">Carregando produtos...</p>
+        ) : error ? (
+          <p className="produto-text-red-500 produto-text-center">{error}</p>
+        ) : filteredProducts.length === 0 ? (
+          <p className="produto-text-gray-500 produto-text-center">Nenhum produto encontrado.</p>
+        ) : (
+          <table className="produto-table">
+            <thead className="produto-thead">
+              <tr>
+                <th className="produto-th">ID</th>
+                <th className="produto-th">Descrição</th>
+                <th className="produto-th">Grupo</th>
+                <th className="produto-th">Imagens</th>
+              </tr>
+            </thead>
+            <tbody className="produto-tbody">
+              {filteredProducts.map((product) => (
+                <tr key={product._id?.$oid || product.id} className="produto-tr">
+                  <td className="produto-td">{product.id || 'N/A'}</td>
+                  <td className="produto-td">{product.descricao || 'Sem descrição'}</td>
+                  <td className="produto-td">{product.grupo || 'Sem grupo'}</td>
+                  <td className="produto-td">
+                    <div className="produto-flex produto-gap-2 produto-flex-wrap">
+                      {product.imagens && Array.isArray(product.imagens) && product.imagens.length > 0 ? (
+                        product.imagens.map((image, index) => (
+                          <div key={index} className="produto-image-container">
                             <img
-                              key={index}
-                              src={`http://localhost:3000/uploads/${imgName}`}
-                              alt={p.descricao || 'Imagem'}
-                              className="h-12 w-12 object-cover rounded border cursor-pointer"
-                              onClick={() => openModal(p.imagens, index)}
+                              src={getImageUrl(image)}
+                              alt={`${product.descricao} - Imagem ${index + 1}`}
+                              className="produto-product-img"
+                              onClick={() => handleImageClick(getImageUrl(image))}
+                              onError={(e) => console.log(`Erro ao carregar imagem: ${image}`, e)}
                             />
-                          ))}
-                        </div>
+                            <div className="produto-image-actions">
+                              <button
+                                className="produto-action-btn produto-approve"
+                                onClick={() => handleApprove(product.id, image)}
+                              >
+                                ✓
+                              </button>
+                              <button
+                                className="produto-action-btn produto-reject"
+                                onClick={() => handleReject(product.id, image)}
+                              >
+                                ✗
+                              </button>
+                              <button
+                                className="produto-action-btn produto-delete"
+                                onClick={() => handleDelete(product.id, image)}
+                              >
+                                🗑️
+                              </button>
+                            </div>
+                          </div>
+                        ))
                       ) : (
-                        <span className="text-gray-400 text-xs">Sem imagem</span>
+                        <p className="produto-text-gray-500">Sem imagens</p>
                       )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
 
-      {/* Modal da galeria */}
-      {modalOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50"
-          onClick={() => setModalOpen(false)}
-        >
-          <div className="relative flex items-center justify-center">
-            {/* Botão anterior */}
-            <button
-              className="absolute left-0 text-white p-2"
-              onClick={(e) => { e.stopPropagation(); prevImage(); }}
-            >
-              <ChevronLeft size={30} />
-            </button>
-
-            <img
-              src={modalProductImgs[modalImgIndex]}
-              alt="Ampliação"
-              className="max-h-[50vh] max-w-[50vw] rounded shadow-lg object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-
-            {/* Botão próximo */}
-            <button
-              className="absolute right-0 text-white p-2"
-              onClick={(e) => { e.stopPropagation(); nextImage(); }}
-            >
-              <ChevronRight size={30} />
+      {/* Modal para visualizar imagem ampliada */}
+      {selectedImage && (
+        <div className="produto-modal-overlay" onClick={closeModal}>
+          <div className="produto-modal-content" onClick={(e) => e.stopPropagation()}>
+            <img src={selectedImage} alt="Imagem ampliada" className="produto-modal-img" />
+            <button className="produto-close-modal" onClick={closeModal}>
+              X
             </button>
           </div>
         </div>
