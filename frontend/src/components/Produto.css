@@ -498,47 +498,6 @@ button:focus, input:focus {
   margin-left: 1rem !important; /* Espaço entre a imagem e os quadradinhos */
 }
 
-.produto-action-btn {
-  width: 2rem !important;
-  height: 2rem !important;
-  border: 1px solid #ccc !important;
-  border-radius: 0.25rem !important;
-  background-color: #fff !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  font-size: 1rem !important;
-  transition: all 0.3s ease !important;
-}
-
-.produto-approve {
-  color: #28a745 !important; /* Verde para aprovação */
-}
-
-.produto-approve:hover {
-  background-color: #28a745 !important;
-  color: #fff !important;
-}
-
-.produto-reject {
-  color: #dc3545 !important; /* Vermelho para reprovação */
-}
-
-.produto-reject:hover {
-  background-color: #dc3545 !important;
-  color: #fff !important;
-}
-
-.produto-delete {
-  color: #6c757d !important; /* Cinza para exclusão */
-}
-
-.produto-delete:hover {
-  background-color: #6c757d !important;
-  color: #fff !important;
-}
-
 .produto-product-img {
   width: 7rem !important; /* Imagens maiores */
   height: 7rem !important;
@@ -584,7 +543,7 @@ button:focus, input:focus {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 50 !important;
+  z-index: 1050 !important;
 }
 
 .produto-modal-content {
@@ -596,6 +555,7 @@ button:focus, input:focus {
   border-radius: 0.75rem !important;
   padding: 1rem !important;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
+  z-index: 1051 !important;
 }
 
 .produto-modal-img {
@@ -703,4 +663,57 @@ button:focus, input:focus {
   .produto-tbody {
     max-height: calc(100vh - 12rem) !important; /* Ajuste para telas menores */
   }
+}
+
+.produto-action-btn {
+  width: 2rem !important;
+  height: 2rem !important;
+  border: 1px solid #ccc !important;
+  border-radius: 0.25rem !important;
+  background-color: #fff !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.produto-approve {
+  color: #28a745 !important; /* Verde para aprovação */
+}
+
+.produto-approve:hover {
+  background-color: #28a745 !important;
+  color: #fff !important;
+}
+
+.produto-reject {
+  color: #dc3545 !important; /* Vermelho para reprovação */
+}
+
+.produto-reject:hover {
+  background-color: #dc3545 !important;
+  color: #fff !important;
+}
+
+.produto-delete {
+  color: #6c757d !important; /* Cinza para exclusão */
+}
+
+.produto-delete:hover {
+  background-color: #6c757d !important;
+  color: #fff !important;
+}
+
+
+.produto-approve.selected {
+  background-color: #4caf50 !important; /* Verde selecionado */
+  color: white !important;
+
+}
+
+.produto-reject.selected {
+  background-color: #f44336 !important; /* Vermelho selecionado */
+  color: white !important;
 }

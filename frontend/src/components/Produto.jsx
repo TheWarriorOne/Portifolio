@@ -18,7 +18,6 @@ export default function Produto() {
       return; // Sai do useEffect se não autenticado
     }
 
-    // Chamada real à API
     const fetchProducts = async () => {
       try {
         const res = await axios.get('http://localhost:3000/products', {
@@ -50,44 +49,50 @@ export default function Produto() {
   };
 
   const handleApprove = async (productId, imageName) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `http://localhost:3000/approve`,
-        { productId, imageName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // Atualiza o estado local após aprovação (se necessário)
-      setProducts((prevProducts) =>
-        prevProducts.map((p) =>
-          p.id === productId ? { ...p, imagens: p.imagens.map(i => i === imageName ? { ...i, approved: true } : i) } : p
-        )
-      );
-    } catch (err) {
-      console.error('Erro ao aprovar imagem:', err);
-      setError('Erro ao aprovar imagem.');
-    }
-  };
+  try {
+    const token = localStorage.getItem('token');
+    const product = products.find(p => p.id === productId);
+    const image = product.imagens.find(img => img.name === imageName);
+    const action = image.approved ? 'unapprove' : 'approve'; // Reverte se já aprovado
 
-  const handleReject = async (productId, imageName) => {
-    try {
-      const token = localStorage.getItem('token');
-      await axios.post(
-        `http://localhost:3000/reject`,
-        { productId, imageName },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      // Atualiza o estado local após reprovação (se necessário)
-      setProducts((prevProducts) =>
-        prevProducts.map((p) =>
-          p.id === productId ? { ...p, imagens: p.imagens.map(i => i === imageName ? { ...i, rejected: true } : i) } : p
-        )
-      );
-    } catch (err) {
-      console.error('Erro ao rejeitar imagem:', err);
-      setError('Erro ao rejeitar imagem.');
-    }
-  };
+    await axios.post(
+      `http://localhost:3000/approve`,
+      { productId, imageName, action },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const res = await axios.get('http://localhost:3000/products', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log('Dados retornados pelo GET /products:', res.data);
+    setProducts(res.data);
+  } catch (err) {
+    console.error('Erro ao aprovar/desaprovar imagem:', err);
+    setError('Erro ao aprovar/desaprovar imagem.');
+  }
+};
+
+const handleReject = async (productId, imageName) => {
+  try {
+    const token = localStorage.getItem('token');
+    const product = products.find(p => p.id === productId);
+    const image = product.imagens.find(img => img.name === imageName);
+    const action = image.rejected ? 'unreject' : 'reject'; // Reverte se já rejeitado
+
+    await axios.post(
+      `http://localhost:3000/approve`,
+      { productId, imageName, action },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    const res = await axios.get('http://localhost:3000/products', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log('Dados retornados pelo GET /products:', res.data);
+    setProducts(res.data);
+  } catch (err) {
+    console.error('Erro ao rejeitar/desrejeitar imagem:', err);
+    setError('Erro ao rejeitar/desrejeitar imagem.');
+  }
+};
 
   const handleDelete = async (productId, imageName) => {
     try {
@@ -97,11 +102,13 @@ export default function Produto() {
       });
       // Atualiza o estado local removendo a imagem
       setProducts((prevProducts) =>
-        prevProducts.map((p) =>
-          p.id === productId
-            ? { ...p, imagens: p.imagens.filter((i) => i !== imageName) }
-            : p
-        ).filter((p) => p.imagens.length > 0) // Remove o produto se não houver mais imagens
+        prevProducts
+          .map((p) =>
+            p.id === productId
+              ? { ...p, imagens: p.imagens.filter((i) => i.name !== imageName) }
+              : p
+          )
+          .filter((p) => p.imagens.length > 0) // Remove o produto se não houver mais imagens
       );
     } catch (err) {
       console.error('Erro ao deletar imagem:', err);
@@ -114,19 +121,16 @@ export default function Produto() {
     product.descricao?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Função para construir a URL da imagem
   const getImageUrl = (imageName) => {
-    return `http://localhost:3000/uploads/${imageName}`; // Ajuste o caminho conforme necessário
+    return `http://localhost:3000/uploads/${imageName}`;
   };
 
   return (
     <div className="produto-min-h-screen produto-flex produto-bg-gray-100" style={{ position: 'relative' }}>
-      {/* Botão Voltar fixo no canto superior esquerdo */}
       <button onClick={() => navigate('/decisao')} className="produto-botao-voltar-top-left">
         Voltar
       </button>
 
-      {/* Contêiner fixo para título e campo de busca */}
       <div className="produto-fixed-header">
         <div className="produto-text-center produto-mb-8">
           <h2 className="produto-text-3xl produto-font-bold produto-text-gray-800">E-coGram</h2>
@@ -142,7 +146,6 @@ export default function Produto() {
         </div>
       </div>
 
-      {/* Tabela de produtos com cabeçalho fixo e corpo rolável */}
       <div className="produto-table-container">
         {loading ? (
           <p className="produto-text-gray-500 produto-text-center">Carregando produtos...</p>
@@ -170,30 +173,35 @@ export default function Produto() {
                     <div className="produto-flex produto-gap-2 produto-flex-wrap">
                       {product.imagens && Array.isArray(product.imagens) && product.imagens.length > 0 ? (
                         product.imagens.map((image, index) => (
-                          <div key={index} className="produto-image-container">
+                          <div key={`${product.id}-${image.name}`} className="produto-image-container">
                             <img
-                              src={getImageUrl(image)}
+                              src={getImageUrl(image.name)}
                               alt={`${product.descricao} - Imagem ${index + 1}`}
                               className="produto-product-img"
-                              onClick={() => handleImageClick(getImageUrl(image))}
-                              onError={(e) => console.log(`Erro ao carregar imagem: ${image}`, e)}
+                              onClick={() => handleImageClick(getImageUrl(image.name))}
+                              onError={(e) => console.log(`Erro ao carregar imagem: ${image.name}`, e)}
                             />
                             <div className="produto-image-actions">
                               <button
-                                className="produto-action-btn produto-approve"
-                                onClick={() => handleApprove(product.id, image)}
+                                key={`${product.id}-${image.name}-approve`}
+                                className={`produto-action-btn produto-approve ${image.approved ? 'selected' : ''}`}
+                                onClick={() => handleApprove(product.id, image.name)}
+                                onMouseOver={() => console.log('Botão Approve:', image.name, 'approved:', image.approved)}
                               >
                                 ✓
                               </button>
                               <button
-                                className="produto-action-btn produto-reject"
-                                onClick={() => handleReject(product.id, image)}
+                                key={`${product.id}-${image.name}-reject`}
+                                className={`produto-action-btn produto-reject ${image.rejected ? 'selected' : ''}`}
+                                onClick={() => handleReject(product.id, image.name)}
+                                onMouseOver={() => console.log('Botão Reject:', image.name, 'rejected:', image.rejected)}
                               >
                                 ✗
                               </button>
                               <button
+                                key={`${product.id}-${image.name}-delete`}
                                 className="produto-action-btn produto-delete"
-                                onClick={() => handleDelete(product.id, image)}
+                                onClick={() => handleDelete(product.id, image.name)}
                               >
                                 🗑️
                               </button>
@@ -212,7 +220,6 @@ export default function Produto() {
         )}
       </div>
 
-      {/* Modal para visualizar imagem ampliada */}
       {selectedImage && (
         <div className="produto-modal-overlay" onClick={closeModal}>
           <div className="produto-modal-content" onClick={(e) => e.stopPropagation()}>

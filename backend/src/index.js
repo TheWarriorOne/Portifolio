@@ -27,7 +27,7 @@ app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-app.use('/uploads', express.static(path.join(__dirname, '../Uploads')));
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.get('/', (req, res) => {
   res.json({ message: 'API Portifolio online' });
@@ -95,9 +95,9 @@ app.post('/upload', upload.array('images'), async (req, res) => {
     const { id = 'default', descricao = 'default', grupo = 'default' } = req.body;
     const fileNames = req.files.map(file => {
       const fileName = Date.now() + '-' + file.originalname;
-      const fullPath = path.join(__dirname, '../Uploads', fileName);
+      const fullPath = path.join(__dirname, '../uploads', fileName); // Corrigido para 'uploads'
       fs.writeFileSync(fullPath, file.buffer);
-      return { name: fileName, approved: false, rejected: false }; // Adiciona status inicial
+      return { name: fileName, approved: false, rejected: false };
     });
 
     const product = await Image.findOneAndUpdate(
@@ -155,56 +155,51 @@ app.get('/products', async (req, res) => {
 
 app.post('/approve', async (req, res) => {
   try {
-    const { productId, imageName } = req.body;
+    const { productId, imageName, action } = req.body;
     const product = await Image.findOne({ id: productId });
     if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
 
-    product.imagens = product.imagens.map(img =>
-      img.name === imageName ? { ...img, approved: true, rejected: false } : img
-    );
+    product.imagens = product.imagens.map((img) => {
+      if (img.name === imageName) {
+        if (action === 'approve') {
+          return { ...img, approved: true, rejected: false };
+        } else if (action === 'unapprove') {
+          return { ...img, approved: false, rejected: false };
+        } else if (action === 'reject') {
+          return { ...img, approved: false, rejected: true };
+        } else if (action === 'unreject') {
+          return { ...img, approved: false, rejected: false };
+        }
+      }
+      return img;
+    });
     await product.save();
 
-    res.json({ message: 'Imagem aprovada com sucesso', product });
+    console.log('Imagem atualizada:', imageName, 'approved:', product.imagens.find(img => img.name === imageName).approved, 'rejected:', product.imagens.find(img => img.name === imageName).rejected);
+    res.json({ message: 'Status atualizado com sucesso', product });
   } catch (err) {
-    console.error('Erro ao aprovar imagem:', err);
-    res.status(500).json({ error: 'Erro ao aprovar imagem' });
-  }
-});
-
-app.post('/reject', async (req, res) => {
-  try {
-    const { productId, imageName } = req.body;
-    const product = await Image.findOne({ id: productId });
-    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
-
-    product.imagens = product.imagens.map(img =>
-      img.name === imageName ? { ...img, rejected: true, approved: false } : img
-    );
-    await product.save();
-
-    res.json({ message: 'Imagem rejeitada com sucesso', product });
-  } catch (err) {
-    console.error('Erro ao rejeitar imagem:', err);
-    res.status(500).json({ error: 'Erro ao rejeitar imagem' });
+    console.error('Erro ao aprovar/rejeitar imagem:', err);
+    res.status(500).json({ error: 'Erro ao atualizar status' });
   }
 });
 
 app.delete('/images/:name', (req, res) => {
-  const filePath = path.join(__dirname, '../Uploads', req.params.name);
+  const filePath = path.join(__dirname, '../uploads', req.params.name); // Corrigido para 'uploads'
   fs.unlink(filePath, (err) => {
     if (err) return res.status(500).json({ error: 'Erro ao deletar arquivo' });
 
-    // Remove a imagem do banco de dados
     Image.updateMany(
       {},
       { $pull: { imagens: { name: req.params.name } } },
       { multi: true }
-    ).then(() => {
-      res.json({ message: 'Imagem deletada com sucesso' });
-    }).catch((err) => {
-      console.error('Erro ao atualizar banco:', err);
-      res.status(500).json({ error: 'Erro ao atualizar banco de dados' });
-    });
+    )
+      .then(() => {
+        res.json({ message: 'Imagem deletada com sucesso' });
+      })
+      .catch((err) => {
+        console.error('Erro ao atualizar banco:', err);
+        res.status(500).json({ error: 'Erro ao atualizar banco de dados' });
+      });
   });
 });
 
