@@ -333,21 +333,21 @@ button:focus, input:focus {
 }
 
 .produto-min-h-screen.produto-flex {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: flex-start !important; /* Alinha no topo */
+  align-items: flex-start !important;
+  min-width: 0 !important;
 }
 
 /* Contêiner fixo para título e campo de busca */
 .produto-fixed-header {
   position: fixed !important;
+  top: 0 !important;
   left: 0 !important;
   width: 100% !important;
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255,255,255,0.90) !important;
   backdrop-filter: blur(10px) !important;
-  padding: 1rem 2rem !important;
-  z-index: 900 !important; /* Acima do conteúdo, abaixo do botão */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+  padding: 0.75rem 1rem !important; /* 🔽 reduz altura */
+  border-bottom: 1px solid rgba(0,0,0,0.08) !important;
+  z-index: 3000 !important;
 }
 
 /* Títulos e subtítulos */
@@ -409,7 +409,7 @@ button:focus, input:focus {
 /* Tabela de produtos */
 .produto-table-container {
   overflow-y: auto !important; /* Habilita rolagem vertical */
-  margin-top: 9rem !important; /* Espaço para o cabeçalho fixo e campo de busca */
+  margin-top: 8rem !important; /* Espaço para o cabeçalho fixo e campo de busca */
   max-height: calc(100vh - 12rem) !important; /* Limita a altura para rolagem */
   background: rgba(255, 255, 255, 0.95) !important;
   box-shadow: 0 6px 18px rgba(102, 126, 234, 0.15) !important;
@@ -420,6 +420,7 @@ button:focus, input:focus {
 }
 
 .produto-table {
+  margin: 0 !important;
   width: 100% !important;
   border-collapse: collapse !important;
   font-size: 0.875rem !important;
@@ -527,7 +528,7 @@ button:focus, input:focus {
   border: none !important;
   cursor: pointer !important;
   transition: all 0.3s ease !important;
-  z-index: 1000 !important; /* Garante que fique acima de tudo */
+  z-index: 3001 !important; /* Garante que fique acima de tudo */
 }
 
 .produto-botao-voltar-top-left:hover {
@@ -656,10 +657,23 @@ button:focus, input:focus {
     top: 3rem !important; /* Ajuste para telas menores */
     padding: 0.5rem 1rem !important;
   }
+.produto-table-container {
+  overflow-y: scroll !important;
+  scrollbar-gutter: stable;
+  width: 100% !important;
+  max-width: 100% !important;
+  isolation: isolate !important;
+  will-change: scroll-position;
+}
+
+/* 2) (Opcional, mas ajuda muito em Windows) reservar “manual” o espaço da barra */
+@supports not (scrollbar-gutter: stable) {
+  :root { --sbw: 17px; } /* largura típica da scrollbar no Windows */
   .produto-table-container {
-    margin-top: 10rem !important; /* Ajuste para telas menores */
-    max-height: calc(100vh - 10rem) !important;
+    padding-right: var(--sbw) !important; /* reserva o espaço sempre */
   }
+}
+
   .produto-tbody {
     max-height: calc(100vh - 12rem) !important; /* Ajuste para telas menores */
   }

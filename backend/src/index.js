@@ -214,3 +214,35 @@ app.delete('/images/:imageName', async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
+
+// Atualiza a ordem das imagens de um produto
+app.put('/products/:id/order', async (req, res) => {
+  try {
+    const { id } = req.params;              // id do produto (string que você usa no campo "id")
+    const { order } = req.body;             // array de nomes de imagem na nova ordem
+
+    if (!Array.isArray(order) || order.length === 0) {
+      return res.status(400).json({ error: 'O campo "order" deve ser um array com os nomes das imagens.' });
+    }
+
+    const product = await Image.findOne({ id });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    const currentNames = product.imagens.map((i) => i.name);
+    // valida se todos existem
+    const allExist = order.every((name) => currentNames.includes(name));
+    if (!allExist) {
+      return res.status(400).json({ error: 'A ordem contém nomes que não pertencem ao produto.' });
+    }
+
+    // monta novo array preservando approved/rejected
+    const map = new Map(product.imagens.map((i) => [i.name, i]));
+    product.imagens = order.map((name) => map.get(name)).filter(Boolean);
+
+    await product.save();
+    res.json({ message: 'Ordem atualizada com sucesso', product });
+  } catch (err) {
+    console.error('Erro ao atualizar ordem:', err);
+    res.status(500).json({ error: 'Erro ao atualizar ordem das imagens' });
+  }
+});
