@@ -717,3 +717,60 @@ button:focus, input:focus {
   background-color: #f44336 !important; /* Vermelho selecionado */
   color: white !important;
 }
+-----------------------------------------------------------------------------------------------------------
+
+/* ===== Toast (notificação) ===== */
+.produto-toast {
+  position: fixed !important;
+  top: 1rem !important;
+  right: 1rem !important;
+  background: linear-gradient(135deg, #22c55e, #16a34a) !important; /* sucesso */
+  color: #fff !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.75rem !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+  transition: opacity .25s ease, transform .25s ease !important;
+  z-index: 1100 !important;
+}
+.produto-toast.hide {
+  opacity: 0 !important;
+  transform: translateY(-10px) !important;
+}
+
+/* ===== Modal de confirmação ===== */
+.produto-confirm-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(0,0,0,.55) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 1060 !important;
+}
+.produto-confirm-content {
+  width: 100% !important;
+  max-width: 24rem !important;
+  background: #fff !important;
+  border-radius: 0.75rem !important;
+  padding: 1.25rem !important;
+  box-shadow: 0 20px 40px rgba(0,0,0,.2) !important;
+  text-align: center !important;
+}
+.produto-confirm-actions {
+  display: flex !important;
+  gap: .75rem !important;
+  justify-content: center !important;
+  margin-top: 1rem !important;
+}
+.produto-btn {
+  padding: .6rem 1rem !important;
+  border: none !important;
+  border-radius: .5rem !important;
+  cursor: pointer !important;
+  font-weight: 700 !important;
+}
+.produto-btn-danger { background: #ef4444 !important; color: #fff !important; }
+.produto-btn-neutral { background: #e5e7eb !important; }

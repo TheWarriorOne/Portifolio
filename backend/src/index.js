@@ -183,25 +183,33 @@ app.post('/approve', async (req, res) => {
   }
 });
 
-app.delete('/images/:name', (req, res) => {
-  const filePath = path.join(__dirname, '../uploads', req.params.name); // Corrigido para 'uploads'
-  fs.unlink(filePath, (err) => {
-    if (err) return res.status(500).json({ error: 'Erro ao deletar arquivo' });
+app.delete('/images/:imageName', async (req, res) => {
+  const { imageName } = req.params;
 
-    Image.updateMany(
-      {},
-      { $pull: { imagens: { name: req.params.name } } },
-      { multi: true }
-    )
-      .then(() => {
-        res.json({ message: 'Imagem deletada com sucesso' });
-      })
-      .catch((err) => {
-        console.error('Erro ao atualizar banco:', err);
-        res.status(500).json({ error: 'Erro ao atualizar banco de dados' });
-      });
-  });
+  try {
+    const imagePath = path.join('uploads', imageName);
+
+    const updatedProduct = await Image.findOneAndUpdate(
+      { 'imagens.name': imageName },
+      { $pull: { imagens: { name: imageName } } },
+      { new: true }
+    );
+
+    if (!updatedProduct) {
+      return res.status(404).json({ error: 'Imagem não encontrada no banco!' });
+    }
+
+    fs.unlink(imagePath, (err) => {
+      if (err) console.log("Imagem não existe fisicamente:", imageName);
+    });
+
+    res.json({ message: 'Imagem excluída com sucesso!' });
+  } catch (error) {
+    console.error("Erro ao excluir imagem:", error);
+    res.status(500).json({ error: 'Erro ao excluir imagem.' });
+  }
 });
+
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
