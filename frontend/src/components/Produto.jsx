@@ -19,6 +19,7 @@ function DraggableImage({
   onReject,
   onAskDelete,
   getImageUrl,
+  onPreview,
 }) {
   // arrastar
   const [{ isDragging }, dragRef] = useDrag({
@@ -35,17 +36,29 @@ function DraggableImage({
   });
 
   // soltar sobre
-  const [, dropRef] = useDrop({
-    accept: ItemTypes.IMAGE,
-    hover: (dragged) => {
-      if (dragged.productId !== productId) return; // não reordena entre produtos diferentes
-      if (dragged.index === index) return;
-      // reordena na UI (estado local)
-      moveImage(productId, dragged.index, index);
-      dragged.index = index; // atualiza índice do item em arrasto
-    },
-    drop: () => ({ productId }), // sinaliza que houve drop
-  });
+    const [, dropRef] = useDrop({
+      accept: ItemTypes.IMAGE,
+      hover: (dragged, monitor) => {
+        if (dragged.productId !== productId) return;
+        if (dragged.index === index) return;
+
+        const hoverBoundingRect = monitor.getClientOffset() && (dragRef?.current || dropRef)?.getBoundingClientRect?.();
+        if (!hoverBoundingRect) return;
+
+        const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
+        const clientOffset = monitor.getClientOffset();
+        const hoverClientX = clientOffset.x - hoverBoundingRect.left;
+
+        // Só move quando atravessa o meio horizontal do alvo
+        if (dragged.index < index && hoverClientX < hoverMiddleX) return;
+        if (dragged.index > index && hoverClientX > hoverMiddleX) return;
+
+        moveImage(productId, dragged.index, index);
+        dragged.index = index;
+      },
+      drop: () => ({ productId }),
+    });
+
 
   return (
     <div
@@ -58,6 +71,7 @@ function DraggableImage({
         src={getImageUrl(image.name)}
         alt={`${productDesc}`}
         className="produto-product-img"
+        onClick={() => onPreview(getImageUrl(image.name))} 
       />
       <div className="produto-image-actions">
         <button
@@ -279,6 +293,7 @@ export default function Produto() {
                               onReject={handleReject}
                               onAskDelete={askDelete}
                               getImageUrl={getImageUrl}
+                              onPreview={(url) => setSelectedImage(url)}
                             />
                           ))
                         ) : (

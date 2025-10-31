@@ -5,6 +5,7 @@ import Login from './components/Login.jsx';
 import Produto from './components/Produto.jsx';
 import App from './App.jsx';
 import Decisao from './components/Decisao.jsx';
+import ImportProducts from './components/ImportProducts';
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
@@ -16,6 +17,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/app" element={<App />} />
         <Route path="/produto" element={<Produto />} />
         <Route path="/produto/:id/:img" element={<Produto />} />
+        <Route path="/import" element={<ImportProducts />} />
       </Routes>
     </Router>
   </React.StrictMode>

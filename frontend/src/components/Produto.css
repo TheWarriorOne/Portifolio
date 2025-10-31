@@ -335,6 +335,7 @@ button:focus, input:focus {
 .produto-min-h-screen.produto-flex {
   align-items: flex-start !important;
   min-width: 0 !important;
+  overscroll-behavior: none !important;
 }
 
 /* Contêiner fixo para título e campo de busca */
@@ -410,28 +411,37 @@ button:focus, input:focus {
 .produto-table-container {
   overflow-y: auto !important; /* Habilita rolagem vertical */
   margin-top: 8rem !important; /* Espaço para o cabeçalho fixo e campo de busca */
-  max-height: calc(100vh - 12rem) !important; /* Limita a altura para rolagem */
+  max-height: calc(100vh - 8.5rem) !important; /* Limita a altura para rolagem */
   background: rgba(255, 255, 255, 0.95) !important;
   box-shadow: 0 6px 18px rgba(102, 126, 234, 0.15) !important;
   margin-bottom: 2rem !important;
   padding-top: 0 !important; /* Remove padding superior */
   max-width: 100% !important; /* Ocupa toda a largura disponível */
   width: 100% !important; /* Garante uso total do espaço */
+  scrollbar-gutter: stable;
+  isolation: isolate !important;
+  will-change: scroll-position;
+  overscroll-behavior: contain !important;
+  scroll-behavior: auto !important;
+  overflow-anchor: none !important;
+  position: relative !important;
 }
 
 .produto-table {
   margin: 0 !important;
   width: 100% !important;
-  border-collapse: collapse !important;
   font-size: 0.875rem !important;
   table-layout: fixed !important; /* Garante largura fixa para colunas */
+  border-collapse: separate !important;  /* 👈 estabiliza o sticky */
+  border-spacing: 0 !important;
 }
 
 .produto-thead {
   position: sticky !important;
   top: 0 !important; /* Fixa no topo do contêiner */
   background: linear-gradient(90deg, #667eea, #764ba2) !important;
-  z-index: 800 !important; /* Acima do tbody */
+  z-index: 2 !important;              /* acima do tbody */
+  will-change: transform; 
 }
 
 .produto-th {
@@ -463,10 +473,10 @@ button:focus, input:focus {
 }
 
 .produto-td {
-  padding: 0.75rem 1rem !important;
-  color: #2d3748 !important;
+  padding: 0.5rem 1rem !important;
+  color: #031431 !important;
   border-bottom: 1px solid #e2e8f0 !important;
-  width: 15% !important; /* ID e Grupo */
+  width: 10% !important; /* ID e Grupo */
   box-sizing: border-box !important; /* Inclui padding na largura */
   word-wrap: break-word !important; /* Quebra texto longo */
 }
@@ -489,14 +499,14 @@ button:focus, input:focus {
 .produto-image-container {
   display: flex !important;
   align-items: flex-start !important; /* Alinha os quadradinhos ao topo da imagem */
-  margin-bottom: 1rem !important; /* Espaçamento entre grupos de imagem e ações */
+  margin-bottom: 0.25rem !important; /* Espaçamento entre grupos de imagem e ações */
 }
 
 .produto-image-actions {
   display: flex !important;
   flex-direction: column !important; /* Empilha os quadradinhos verticalmente */
   gap: 0.5rem !important; /* Espaçamento entre os botões */
-  margin-left: 1rem !important; /* Espaço entre a imagem e os quadradinhos */
+  margin-left: 0.5rem !important; /* Espaço entre a imagem e os quadradinhos */
 }
 
 .produto-product-img {
@@ -544,7 +554,7 @@ button:focus, input:focus {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  z-index: 1050 !important;
+  z-index: 3050 !important;
 }
 
 .produto-modal-content {
@@ -556,7 +566,7 @@ button:focus, input:focus {
   border-radius: 0.75rem !important;
   padding: 1rem !important;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2) !important;
-  z-index: 1051 !important;
+  z-index: 3051 !important;
 }
 
 .produto-modal-img {
@@ -656,28 +666,7 @@ button:focus, input:focus {
   .produto-fixed-header {
     top: 3rem !important; /* Ajuste para telas menores */
     padding: 0.5rem 1rem !important;
-  }
-.produto-table-container {
-  overflow-y: scroll !important;
-  scrollbar-gutter: stable;
-  width: 100% !important;
-  max-width: 100% !important;
-  isolation: isolate !important;
-  will-change: scroll-position;
-}
-
-/* 2) (Opcional, mas ajuda muito em Windows) reservar “manual” o espaço da barra */
-@supports not (scrollbar-gutter: stable) {
-  :root { --sbw: 17px; } /* largura típica da scrollbar no Windows */
-  .produto-table-container {
-    padding-right: var(--sbw) !important; /* reserva o espaço sempre */
-  }
-}
-
-  .produto-tbody {
-    max-height: calc(100vh - 12rem) !important; /* Ajuste para telas menores */
-  }
-}
+}}
 
 .produto-action-btn {
   width: 2rem !important;

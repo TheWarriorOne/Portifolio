@@ -1,7 +1,7 @@
 import './Decisao.css';
 
 import { useNavigate } from 'react-router-dom';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Upload } from 'lucide-react';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -38,11 +38,20 @@ export default function Dashboard() {
             </button>
 
             <button
-              onClick={() => navigate('/app')} // Alterado de /cadastrar para /app
+              onClick={() => navigate('/app')}
               className="flex items-center justify-center bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-all duration-300 transform hover:scale-105 space-x-3 w-64"
             >
               <Plus size={20} />
               <span className="text-base font-medium">Cadastrar Produtos</span>
+            </button>
+
+            {/* ✅ Novo Botão */}
+            <button
+              onClick={() => navigate('/import')}
+              className="flex items-center justify-center bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all duration-300 transform hover:scale-105 space-x-3 w-64"
+            >
+              <Upload size={20} />
+              <span className="text-base font-medium">Importar E-comm</span>
             </button>
           </div>
 
