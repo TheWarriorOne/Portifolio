@@ -38,9 +38,9 @@ export default function ImportProducts() {
   const parseCodes = (text) => {
     if (!text) return [];
     const parts = text
-      .split(';') // ✅ mantém apenas separação por ;
-      .map(s => s.trim())
-      .filter(Boolean);
+    .split(/[\n,;|\s\t]+/)
+    .map(s => s.trim())
+    .filter(Boolean);
 
     const unique = [];
     const seen = new Set();
@@ -59,7 +59,7 @@ export default function ImportProducts() {
 
     const codes = parseCodes(inputText);
     if (codes.length === 0) {
-      setError('Insira até 50 códigos separados por ponto e vírgula (;)');
+      setError('Insira até 50 códigos separados por nova linha, vírgula ou espaço) (;)');
       return;
     }
     if (codes.length > 50) {
@@ -118,10 +118,10 @@ export default function ImportProducts() {
       <h2>Importar produtos para e-commerce (Fake)</h2>
 
       <div className="import-card">
-        <label>Coloque até 50 códigos separados por “;”:</label>
+        <label>Coloque até 50 códigos separados por nova linha, vírgula ou espaço:</label>
         <textarea
           className="import-input"
-          placeholder="Ex.: 100001;100002;100003;"
+          placeholder="Ex.: 100001,100002,100003,"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           maxLength={1200}
