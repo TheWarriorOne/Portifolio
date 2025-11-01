@@ -125,9 +125,6 @@ export default function Login() {
                 <input type="checkbox" className="login-actions" />
                 <span className="login-actions">Lembrar de mim</span>
               </label>
-              <a href="#" className="login-actions">
-                Esqueceu a senha?
-              </a>
             </div>
             <div className="botao-entrar mx-4">
               <button

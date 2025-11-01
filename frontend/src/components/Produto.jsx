@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
@@ -21,48 +21,49 @@ function DraggableImage({
   getImageUrl,
   onPreview,
 }) {
-  // arrastar
-  const [{ isDragging }, dragRef] = useDrag({
+  const ref = useRef(null); // ✅ ref real no nó DOM
+
+  const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.IMAGE,
-    item: { index, productId }, // quem está sendo arrastado
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-    end: (_item, monitor) => {
-      // quando soltar (drop), persistimos a ordem atual desse produto
-      if (monitor.didDrop()) onDropPersist(productId);
-      else onDropPersist(productId); // mesmo sem alvo explícito, a ordem na UI já mudou
+    item: { index, productId },
+    collect: (monitor) => ({ isDragging: monitor.isDragging() }),
+    end: () => {
+      // Após soltar, persistimos a ordem
+      onDropPersist(productId);
     },
   });
 
-  // soltar sobre
-    const [, dropRef] = useDrop({
-      accept: ItemTypes.IMAGE,
-      hover: (dragged, monitor) => {
-        if (dragged.productId !== productId) return;
-        if (dragged.index === index) return;
+  const [, drop] = useDrop({
+    accept: ItemTypes.IMAGE,
+    hover: (dragged, monitor) => {
+      if (dragged.productId !== productId) return;
+      if (dragged.index === index) return;
+      if (!ref.current) return;
 
-        const hoverBoundingRect = monitor.getClientOffset() && (dragRef?.current || dropRef)?.getBoundingClientRect?.();
-        if (!hoverBoundingRect) return;
+      const rect = ref.current.getBoundingClientRect();
+      const middleX = (rect.right - rect.left) / 2;
 
-        const hoverMiddleX = (hoverBoundingRect.right - hoverBoundingRect.left) / 2;
-        const clientOffset = monitor.getClientOffset();
-        const hoverClientX = clientOffset.x - hoverBoundingRect.left;
+      const clientOffset = monitor.getClientOffset();
+      if (!clientOffset) return;
 
-        // Só move quando atravessa o meio horizontal do alvo
-        if (dragged.index < index && hoverClientX < hoverMiddleX) return;
-        if (dragged.index > index && hoverClientX > hoverMiddleX) return;
+      const hoverClientX = clientOffset.x - rect.left;
 
-        moveImage(productId, dragged.index, index);
-        dragged.index = index;
-      },
-      drop: () => ({ productId }),
-    });
+      // Só move quando cruza a metade horizontal do alvo
+      if (dragged.index < index && hoverClientX < middleX) return;
+      if (dragged.index > index && hoverClientX > middleX) return;
 
+      moveImage(productId, dragged.index, index);
+      dragged.index = index;
+    },
+    drop: () => ({ productId }),
+  });
+
+  // ✅ encadear drag e drop no mesmo ref real
+  drag(drop(ref));
 
   return (
     <div
-      ref={(node) => dragRef(dropRef(node))}
+      ref={ref}
       className="produto-image-container"
       style={{ opacity: isDragging ? 0.6 : 1 }}
       title="Arraste para reordenar"
@@ -71,7 +72,7 @@ function DraggableImage({
         src={getImageUrl(image.name)}
         alt={`${productDesc}`}
         className="produto-product-img"
-        onClick={() => onPreview(getImageUrl(image.name))} 
+        onClick={() => onPreview(getImageUrl(image.name))}
       />
       <div className="produto-image-actions">
         <button
