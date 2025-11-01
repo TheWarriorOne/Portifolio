@@ -2,9 +2,10 @@ name: SonarCloud Scan
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   sonarcloud:
@@ -15,12 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # necessário para análise correta
+          fetch-depth: 0
 
       - name: Setup Node (para parse JS/TS se precisar)
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: "20"
 
       # (opcional) Instalar deps se desejar rodar testes/coverage antes
       # - name: Install frontend deps
@@ -43,4 +44,3 @@ jobs:
         uses: SonarSource/sonarcloud-github-action@v2
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
