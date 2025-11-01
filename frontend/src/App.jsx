@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import './App.css'; // Certifique-se de que os estilos estão importados
+import './App.css';
 
 export default function App() {
   const navigate = useNavigate();
