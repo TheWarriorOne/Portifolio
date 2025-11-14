@@ -7,7 +7,6 @@ import './Produto.css';
 
 const ItemTypes = { IMAGE: 'image' };
 
-// Item arrastável + área de drop
 function DraggableImage({
   productId,
   productDesc,
@@ -21,14 +20,13 @@ function DraggableImage({
   getImageUrl,
   onPreview,
 }) {
-  const ref = useRef(null); // ✅ ref real no nó DOM
+  const ref = useRef(null);
 
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.IMAGE,
     item: { index, productId },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
     end: () => {
-      // Após soltar, persistimos a ordem
       onDropPersist(productId);
     },
   });
@@ -42,13 +40,10 @@ function DraggableImage({
 
       const rect = ref.current.getBoundingClientRect();
       const middleX = (rect.right - rect.left) / 2;
-
       const clientOffset = monitor.getClientOffset();
       if (!clientOffset) return;
-
       const hoverClientX = clientOffset.x - rect.left;
 
-      // Só move quando cruza a metade horizontal do alvo
       if (dragged.index < index && hoverClientX < middleX) return;
       if (dragged.index > index && hoverClientX > middleX) return;
 
@@ -58,7 +53,6 @@ function DraggableImage({
     drop: () => ({ productId }),
   });
 
-  // ✅ encadear drag e drop no mesmo ref real
   drag(drop(ref));
 
   return (
@@ -69,10 +63,10 @@ function DraggableImage({
       title="Arraste para reordenar"
     >
       <img
-        src={getImageUrl(image.name)}
+        src={getImageUrl(image)}
         alt={`${productDesc}`}
         className="produto-product-img"
-        onClick={() => onPreview(getImageUrl(image.name))}
+        onClick={() => onPreview(getImageUrl(image))}
       />
       <div className="produto-image-actions">
         <button
@@ -101,6 +95,8 @@ function DraggableImage({
   );
 }
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export default function Produto() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -109,41 +105,50 @@ export default function Produto() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // confirmação e toast
-  const [confirmData, setConfirmData] = useState(null); // { productId, imageName }
+  const [confirmData, setConfirmData] = useState(null);
   const [toast, setToast] = useState({ show: false, text: '' });
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+  const token = typeof window !== 'undefined' ? (localStorage.getItem('token') || sessionStorage.getItem('token')) : null;
 
   const api = axios.create({
-    baseURL: 'http://localhost:3000',
+    baseURL: API_BASE,
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   });
 
   useEffect(() => {
-    const t = localStorage.getItem('token');
+    const t = token;
     if (!t) {
       navigate('/');
       return;
     }
+    let mounted = true;
     const fetchProducts = async () => {
       try {
         const res = await api.get('/products');
-        setProducts(Array.isArray(res.data) ? res.data : []);
+        if (mounted) setProducts(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
-      console.error(err);
-      setError('Erro ao carregar produtos. Verifique o servidor ou a conexão.');
+        console.error(err);
+        setError('Erro ao carregar produtos. Verifique o servidor ou a conexão.');
       } finally {
-        setLoading(false);
+        if (mounted) setLoading(false);
       }
     };
     fetchProducts();
+    return () => { mounted = false; };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
-  const getImageUrl = (imageName) => `http://localhost:3000/uploads/${imageName}`;
+  const getImageUrl = (image) => {
+    if (!image) return '';
+    // image pode ser objeto { gridFsId, name } ou string
+    if (typeof image === 'string') {
+      return `${API_BASE}/uploads/${image}`;
+    }
+    const id = image.gridFsId || image.name || '';
+    return id ? `${API_BASE}/uploads/${id}` : '';
+  };
 
-  // ===== Aprovar / Rejeitar =====
+  // Aprovar / Rejeitar
   const handleApprove = async (productId, imageName) => {
     try {
       const product = products.find((p) => p.id === productId);
@@ -152,7 +157,8 @@ export default function Produto() {
       await api.post('/approve', { productId, imageName, action });
       const res = await api.get('/products');
       setProducts(res.data);
-    } catch {
+    } catch (e) {
+      console.error(e);
       setError('Erro ao aprovar/desaprovar imagem.');
     }
   };
@@ -165,12 +171,13 @@ export default function Produto() {
       await api.post('/approve', { productId, imageName, action });
       const res = await api.get('/products');
       setProducts(res.data);
-    } catch {
+    } catch (e) {
+      console.error(e);
       setError('Erro ao rejeitar/desrejeitar imagem.');
     }
   };
 
-  // ===== Excluir =====
+  // Excluir
   const askDelete = (productId, imageName) => setConfirmData({ productId, imageName });
 
   const confirmDelete = async () => {
@@ -187,13 +194,14 @@ export default function Produto() {
       );
       setToast({ show: true, text: 'Imagem excluída com sucesso!' });
       setTimeout(() => setToast({ show: false, text: '' }), 2000);
-    } catch {
+    } catch (e) {
+      console.error(e);
       setError('Erro ao deletar imagem.');
     }
   };
   const cancelDelete = () => setConfirmData(null);
 
-  // ===== Reordenação (UI) =====
+  // Reordenação UI
   const moveImage = useCallback((productId, from, to) => {
     setProducts((prev) =>
       prev.map((p) => {
@@ -206,22 +214,21 @@ export default function Produto() {
     );
   }, []);
 
-  // ===== Persistir ordem no backend =====
+  // Persistir ordem
   const persistOrder = async (productId) => {
     try {
       const product = products.find((p) => p.id === productId);
       if (!product || !Array.isArray(product.imagens)) return;
       const newOrder = product.imagens.map((img) => img.name);
       await api.put(`/products/${productId}/order`, { order: newOrder });
-      // (opcional) feedback visual:
       setToast({ show: true, text: 'Ordem atualizada!' });
       setTimeout(() => setToast({ show: false, text: '' }), 1200);
-    } catch {
+    } catch (e) {
+      console.error(e);
       setError('Não foi possível salvar a nova ordem.');
     }
   };
 
-  // filtro
   const filteredProducts = products.filter(
     (p) =>
       p.id?.toString().includes(searchTerm) ||
@@ -235,10 +242,8 @@ export default function Produto() {
           Voltar
         </button>
 
-        {/* Toast */}
         {toast.show && <div className="produto-toast">{toast.text}</div>}
 
-        {/* Cabeçalho + Busca */}
         <div className="produto-fixed-header">
           <div className="produto-text-center produto-mb-8">
             <h2 className="produto-text-3xl produto-font-bold produto-text-gray-800">E-coGram</h2>
@@ -254,7 +259,6 @@ export default function Produto() {
           </div>
         </div>
 
-        {/* Tabela */}
         <div className="produto-table-container">
           {loading ? (
             <p className="produto-text-gray-500 produto-text-center">Carregando produtos...</p>
@@ -309,7 +313,6 @@ export default function Produto() {
           )}
         </div>
 
-        {/* Modal de preview */}
         {selectedImage && (
           <div className="produto-modal-overlay" onClick={() => setSelectedImage(null)}>
             <div className="produto-modal-content" onClick={(e) => e.stopPropagation()}>
@@ -321,7 +324,6 @@ export default function Produto() {
           </div>
         )}
 
-        {/* Modal de confirmação de exclusão */}
         {confirmData && (
           <div className="produto-confirm-overlay" onClick={cancelDelete}>
             <div className="produto-confirm-content" onClick={(e) => e.stopPropagation()}>
