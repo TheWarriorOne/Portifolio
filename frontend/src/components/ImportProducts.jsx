@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import './ImportProducts.css';
-import { useNavigate } from 'react-router-dom';
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { useNavigate } from 'react-router-dom'; // ✅ import do useNavigate
 
 export default function ImportProducts() {
   const [allProducts, setAllProducts] = useState([]);
@@ -11,13 +9,14 @@ export default function ImportProducts() {
   const [processing, setProcessing] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
+
+  const navigate = useNavigate(); // ✅ inicialização
 
   // buscar produtos (cache local)
   useEffect(() => {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    const token = localStorage.getItem('token');
     const api = axios.create({
-      baseURL: API,
+      baseURL: 'http://localhost:3000',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
 
@@ -38,12 +37,10 @@ export default function ImportProducts() {
   // limpa e normaliza os códigos do usuário
   const parseCodes = (text) => {
     if (!text) return [];
-    // aceita ; , nova linha, espaços, tabs
     const parts = text
-      .split(/[\n,;|\s\t]+/)
-      .map(s => s.replace(/;$/,'')) // remove ; final se houver
-      .map(s => s.trim())
-      .filter(Boolean);
+    .split(/[\n,;|\s\t]+/)
+    .map(s => s.trim())
+    .filter(Boolean);
 
     const unique = [];
     const seen = new Set();
@@ -62,7 +59,7 @@ export default function ImportProducts() {
 
     const codes = parseCodes(inputText);
     if (codes.length === 0) {
-      setError('Insira até 50 códigos (ex.: 100001;100002; ou separados por nova linha, vírgula ou espaço).');
+      setError('Insira até 50 códigos separados por nova linha, vírgula ou espaço) (;)');
       return;
     }
     if (codes.length > 50) {
@@ -112,14 +109,19 @@ export default function ImportProducts() {
 
   return (
     <div className="import-wrap">
-      <button className="btn-ghost back-btn" onClick={() => navigate('/Decisao')}>⬅ Voltar</button>
+
+      {/* ✅ Botão voltar */}
+      <button className="btn-ghost back-btn" onClick={() => navigate('/Decisao')}>
+        Voltar
+      </button>
+
       <h2>Importar produtos para e-commerce</h2>
 
       <div className="import-card">
-        <label>Coloque até 50 códigos (ex.: 100001;100002;) ou separados por nova linha, vírgula ou espaço:</label>
+        <label>Coloque até 50 códigos separados por nova linha, vírgula ou espaço:</label>
         <textarea
           className="import-input"
-          placeholder="Ex.: 100001;100002;100003;"
+          placeholder="Ex.: 100001,100002,100003,"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           maxLength={1200}
@@ -182,7 +184,9 @@ export default function ImportProducts() {
                   <p className="muted">Nenhum código ignorado.</p>
                 ) : (
                   <table>
-                    <thead><tr><th>Código</th><th>Motivo</th></tr></thead>
+                    <thead>
+                      <tr><th>Código</th><th>Motivo</th></tr>
+                    </thead>
                     <tbody>
                       {result.skipped.map((s) => (
                         <tr key={s.code + '-' + s.reason}>
