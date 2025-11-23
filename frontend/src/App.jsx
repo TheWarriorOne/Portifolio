@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from './services/api';
 import './App.css';
 
 export default function App() {
@@ -42,8 +42,8 @@ export default function App() {
     formData.append('grupo', grupo || 'Sem grupo');
     
     try {
-      const res = await axios.post('http://localhost:3000/upload', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
+      const res = await api.post('/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
       });
       setMessage(res.data.message);
       setFiles([]);

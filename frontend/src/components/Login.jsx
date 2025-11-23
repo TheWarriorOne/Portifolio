@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api, { setAuthToken } from '../services/api';
 import { Eye, EyeOff } from 'lucide-react';
 import './Login.css';
 
@@ -22,36 +22,35 @@ export default function Login() {
     }
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await axios.post('http://localhost:3000/login', {
-        username,
-        password,
-      });
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  try {
+    const res = await api.post('/login', { username, password });
+    const token = res.data?.token;
+    if (!token) throw new Error('Token não retornado');
 
-      // Armazena o token conforme a preferência
-      const token = res.data?.token;
-      if (rememberMe) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('rememberedUsername', username);
-      } else {
-        // token apenas na sessão atual
-        sessionStorage.setItem('token', token);
-        // garantir que não fique “lembrado” se desmarcar
-        localStorage.removeItem('token');
-        localStorage.removeItem('rememberedUsername');
-      }
-
-      navigate('/decisao');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Erro ao fazer login');
-    } finally {
-      setLoading(false);
+    if (rememberMe) {
+      localStorage.setItem('token', token);
+      localStorage.setItem('rememberedUsername', username);
+    } else {
+      sessionStorage.setItem('token', token);
+      localStorage.removeItem('token');
+      localStorage.removeItem('rememberedUsername');
     }
-  };
+
+    // Aplica token na instância global do axios
+    setAuthToken(token);
+
+    navigate('/decisao');
+  } catch (err) {
+    setError(err.response?.data?.error || err.message || 'Erro ao fazer login');
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen flex">

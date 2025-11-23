@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 import './ImportProducts.css';
 import { useNavigate } from 'react-router-dom'; // ✅ import do useNavigate
 
@@ -14,12 +14,6 @@ export default function ImportProducts() {
 
   // buscar produtos (cache local)
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const api = axios.create({
-      baseURL: 'http://localhost:3000',
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
-
     let mounted = true;
     (async () => {
       try {
