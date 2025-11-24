@@ -1,3 +1,4 @@
+// backend/src/index.js
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
@@ -6,34 +7,41 @@ import { fileTypeFromBuffer } from 'file-type';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { connectDB } from './db.js';
+import { connectDB } from './db.js'; // sua função de conexão (assume que retorna { db, bucket } quando await)
 import Image from './models/Image.js';
 import User from './models/User.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
-connectDB();
+import mongoose from 'mongoose';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 app.use(cors({ origin: 'http://localhost:5173' }));
 app.use(morgan('dev'));
 app.use(express.json());
 
+// Multer (usado no upload legacy)
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
+// Serve uploads locais (legacy)
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+// -----------------------------------------------------------------------------
+// ROTA HOME
+// -----------------------------------------------------------------------------
 app.get('/', (req, res) => {
   res.json({ message: 'API Portifolio online' });
 });
 
-app.post('/register', async (req, res) => {
+// -----------------------------------------------------------------------------
+// REGISTER / LOGIN
+// -----------------------------------------------------------------------------
+async function handleRegister(req, res) {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
@@ -43,18 +51,17 @@ app.post('/register', async (req, res) => {
 
     const salt = bcrypt.genSaltSync(10);
     const hash = bcrypt.hashSync(password, salt);
-
     const user = await User.create({ username, password: hash });
 
     console.log('Usuário criado:', user.username);
     return res.json({ message: 'Usuário criado', id: user._id });
   } catch (err) {
-    console.error('Erro no /register:', err);
+    console.error('Erro no register:', err);
     return res.status(500).json({ error: 'Erro ao criar usuário' });
   }
-});
+}
 
-app.post('/login', async (req, res) => {
+async function handleLogin(req, res) {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
@@ -67,182 +74,341 @@ app.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id.toString(), username: user.username },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'devsecret',
       { expiresIn: '8h' }
     );
 
     console.log('Login bem-sucedido:', user.username);
     return res.json({ message: 'Login bem-sucedido', token });
   } catch (err) {
-    console.error('Erro no /login:', err);
+    console.error('Erro no login:', err);
     return res.status(500).json({ error: 'Erro no login' });
   }
-});
+}
 
-app.post('/upload', upload.array('images'), async (req, res) => {
+// Rotas de auth (compatível com front)
+app.post('/register', handleRegister);
+app.post('/login', handleLogin);
+app.post('/api/register', handleRegister);
+app.post('/api/login', handleLogin);
+
+// -----------------------------------------------------------------------------
+// UPLOAD LEGACY (grava arquivos no folder /uploads local)
+// -----------------------------------------------------------------------------
+app.post('/api/upload', upload.array('images'), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });
     }
 
-    for (const file of req.files) {
-      const fileType = await fileTypeFromBuffer(file.buffer);
-      if (!fileType || !fileType.mime.startsWith('image/')) {
-        return res.status(400).json({ error: 'Um ou mais arquivos não são imagens válidas' });
-      }
-    }
+    // Conectar e obter bucket (connectDB já retorna { db, bucket })
+    const { db, bucket } = await connectDB();
 
     const { id = 'default', descricao = 'default', grupo = 'default' } = req.body;
-    const fileNames = req.files.map(file => {
-      const fileName = Date.now() + '-' + file.originalname;
-      const fullPath = path.join(__dirname, '../uploads', fileName); // Corrigido para 'uploads'
-      fs.writeFileSync(fullPath, file.buffer);
-      return { name: fileName, approved: false, rejected: false };
-    });
 
+    const savedImages = [];
+
+    // Para cada arquivo, crie um uploadStream no GridFS e aguarde finish
+    for (const file of req.files) {
+      // nome no GridFS: timestamp-originalname (igual ao que você usava)
+      const fileName = Date.now() + '-' + file.originalname;
+
+      // openUploadStream aceita contentType
+      const uploadStream = bucket.openUploadStream(fileName, {
+        contentType: file.mimetype,
+        metadata: { originalname: file.originalname, uploadedAt: new Date() },
+      });
+
+      // escreve o buffer e aguarda finish
+      await new Promise((resolve, reject) => {
+        uploadStream.end(file.buffer, (err) => {
+          if (err) return reject(err);
+        });
+        uploadStream.on('finish', () => resolve());
+        uploadStream.on('error', (err) => reject(err));
+      });
+
+      // uploadStream.id é um ObjectId (do GridFS)
+      const gridFsId = String(uploadStream.id);
+
+      // guarda o registro que será salvo no product.imagens
+      savedImages.push({
+        name: fileName,
+        approved: false,
+        rejected: false,
+        gridFsId,
+        createdAt: new Date(),
+      });
+    }
+
+    // Atualiza/insere o documento do produto na coleção via Mongoose (Image model)
     const product = await Image.findOneAndUpdate(
       { id },
-      { descricao, grupo, imagens: fileNames },
+      {
+        descricao,
+        grupo,
+        $push: { imagens: { $each: savedImages } },
+      },
       { upsert: true, new: true, setDefaultsOnInsert: true }
     );
 
-    res.json({
-      message: 'Upload realizado com sucesso',
+    return res.json({
+      message: 'Upload realizado com sucesso (GridFS)',
       id,
       descricao,
       grupo,
-      imagens: fileNames,
-      mongoId: product._id
+      imagens: savedImages,
+      mongoId: product._id,
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro no upload' });
+    console.error('Erro upload GridFS:', err);
+    return res.status(500).json({ error: 'Erro no upload' });
   }
 });
 
-app.get('/products', async (req, res) => {
+// -----------------------------------------------------------------------------
+// LISTAR PRODUTOS (endpoint usado pelo frontend: GET /api/products)
+// -----------------------------------------------------------------------------
+app.get('/api/products', async (req, res) => {
   try {
     const { id, descricao, grupo } = req.query;
-
     const filter = {};
     if (id) filter.id = { $regex: id, $options: 'i' };
     if (descricao) filter.descricao = { $regex: descricao, $options: 'i' };
     if (grupo) filter.grupo = { $regex: grupo, $options: 'i' };
 
-    const images = await Image.find(filter).sort({ createdAt: 1 });
+    // Aqui usamos modelo Image (o seu schema que tem id, descricao, grupo, imagens[])
+    const images = await Image.find(filter).sort({ createdAt: 1 }).lean();
 
+    // Agrupa por id (caso você tenha registros separados)
     const grouped = images.reduce((acc, img) => {
       if (!acc[img.id]) {
         acc[img.id] = {
           id: img.id,
           descricao: img.descricao,
           grupo: img.grupo,
-          imagens: []
+          imagens: [],
         };
       }
-      acc[img.id].imagens.push(...img.imagens);
+      // garante que appenda o array imagens
+      acc[img.id].imagens.push(...(img.imagens || []));
       return acc;
     }, {});
 
-    const products = Object.values(grouped);
-
-    res.json(products);
+    return res.json(Object.values(grouped));
   } catch (err) {
-    console.error(err);
+    console.error('Erro ao buscar produtos:', err);
     res.status(500).json({ error: 'Erro ao buscar produtos' });
   }
 });
 
-app.post('/approve', async (req, res) => {
+// -----------------------------------------------------------------------------
+// APROVA / REJEITA IMAGEM (POST /api/approve)
+// Body: { productId, imageIdentifier, action }
+// imageIdentifier pode ser gridFsId ou name
+// -----------------------------------------------------------------------------
+app.post('/api/approve', async (req, res) => {
   try {
-    const { productId, imageName, action } = req.body;
+    const { productId, imageIdentifier, action } = req.body;
+    if (!productId || !imageIdentifier || !action) return res.status(400).json({ error: 'Dados insuficientes' });
+
     const product = await Image.findOne({ id: productId });
     if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
 
     product.imagens = product.imagens.map((img) => {
-      if (img.name === imageName) {
-        if (action === 'approve') {
-          return { ...img, approved: true, rejected: false };
-        } else if (action === 'unapprove') {
-          return { ...img, approved: false, rejected: false };
-        } else if (action === 'reject') {
-          return { ...img, approved: false, rejected: true };
-        } else if (action === 'unreject') {
-          return { ...img, approved: false, rejected: false };
-        }
-      }
+      // compara tanto por gridFsId quanto por name
+      const matches = (img.gridFsId && String(img.gridFsId) === String(imageIdentifier)) || (img.name && img.name === imageIdentifier);
+      if (!matches) return img;
+
+      if (action === 'approve') return { ...img.toObject?.(), approved: true, rejected: false } || { ...img, approved: true, rejected: false };
+      if (action === 'unapprove') return { ...img.toObject?.(), approved: false } || { ...img, approved: false };
+      if (action === 'reject') return { ...img.toObject?.(), approved: false, rejected: true } || { ...img, approved: false, rejected: true };
+      if (action === 'unreject') return { ...img.toObject?.(), rejected: false } || { ...img, rejected: false };
+
       return img;
     });
-    await product.save();
 
-    console.log('Imagem atualizada:', imageName, 'approved:', product.imagens.find(img => img.name === imageName).approved, 'rejected:', product.imagens.find(img => img.name === imageName).rejected);
-    res.json({ message: 'Status atualizado com sucesso', product });
+    await product.save();
+    return res.json({ message: 'Status atualizado', product });
   } catch (err) {
-    console.error('Erro ao aprovar/rejeitar imagem:', err);
+    console.error('Erro no approve:', err);
     res.status(500).json({ error: 'Erro ao atualizar status' });
   }
 });
 
-app.delete('/images/:imageName', async (req, res) => {
-  const { imageName } = req.params;
-
+// -----------------------------------------------------------------------------
+// ATUALIZA ORDEM DAS IMAGENS (PUT /api/products/:id/order)
+// Body: { order: [ 'filename1', 'filename2', ...' ] }
+// -----------------------------------------------------------------------------
+app.put('/api/products/:id/order', async (req, res) => {
   try {
-    const imagePath = path.join('uploads', imageName);
+    const { id } = req.params;
+    const { order } = req.body;
 
-    const updatedProduct = await Image.findOneAndUpdate(
-      { 'imagens.name': imageName },
-      { $pull: { imagens: { name: imageName } } },
-      { new: true }
-    );
-
-    if (!updatedProduct) {
-      return res.status(404).json({ error: 'Imagem não encontrada no banco!' });
-    }
-
-    fs.unlink(imagePath, (err) => {
-      if (err) console.log("Imagem não existe fisicamente:", imageName);
-    });
-
-    res.json({ message: 'Imagem excluída com sucesso!' });
-  } catch (error) {
-    console.error("Erro ao excluir imagem:", error);
-    res.status(500).json({ error: 'Erro ao excluir imagem.' });
-  }
-});
-
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
-
-// Atualiza a ordem das imagens de um produto
-app.put('/products/:id/order', async (req, res) => {
-  try {
-    const { id } = req.params;              // id do produto (string que você usa no campo "id")
-    const { order } = req.body;             // array de nomes de imagem na nova ordem
-
-    if (!Array.isArray(order) || order.length === 0) {
-      return res.status(400).json({ error: 'O campo "order" deve ser um array com os nomes das imagens.' });
-    }
+    if (!Array.isArray(order) || order.length === 0) return res.status(400).json({ error: 'Order inválido' });
 
     const product = await Image.findOne({ id });
     if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
 
     const currentNames = product.imagens.map((i) => i.name);
-    // valida se todos existem
     const allExist = order.every((name) => currentNames.includes(name));
-    if (!allExist) {
-      return res.status(400).json({ error: 'A ordem contém nomes que não pertencem ao produto.' });
-    }
+    if (!allExist) return res.status(400).json({ error: 'Nomes inválidos na ordem' });
 
-    // monta novo array preservando approved/rejected
     const map = new Map(product.imagens.map((i) => [i.name, i]));
     product.imagens = order.map((name) => map.get(name)).filter(Boolean);
 
     await product.save();
-    res.json({ message: 'Ordem atualizada com sucesso', product });
+    return res.json({ message: 'Ordem atualizada', product });
   } catch (err) {
     console.error('Erro ao atualizar ordem:', err);
-    res.status(500).json({ error: 'Erro ao atualizar ordem das imagens' });
+    res.status(500).json({ error: 'Erro ao atualizar ordem' });
   }
 });
+
+// -----------------------------------------------------------------------------
+// DELETE IMAGE (compatível com GridFS e com o seu array imagens)
+// Endpoint chamado pelo frontend: DELETE /api/images/:identifier
+// identifier pode ser:
+//  - gridFsId (string ou ObjectId)
+//  - filename (name)
+// -----------------------------------------------------------------------------
+// DELETE /api/products/:productId/image/:identifier
+app.delete('/api/products/:productId/image/:identifier', async (req, res) => {
+  const { productId, identifier } = req.params;
+
+  try {
+    const { db, bucket } = await connectDB();
+    const bucketName = process.env.GRIDFS_BUCKET || 'uploads';
+    const filesCol = db.collection(`${bucketName}.files`);
+    const productsCol = db.collection('images');
+
+    let fileDeleted = false;
+    const isObjId = mongoose.Types.ObjectId.isValid(identifier);
+    const idObj = isObjId ? new mongoose.Types.ObjectId(identifier) : null;
+
+    // 1) Deletar do GridFS
+    if (idObj) {
+      try {
+        await bucket.delete(idObj);
+        fileDeleted = true;
+      } catch (err) {
+        /* arquivo pode já não existir */
+      }
+    }
+
+    if (!fileDeleted) {
+      const fileDoc = await filesCol.findOne({ filename: identifier });
+      if (fileDoc) {
+        try {
+          await bucket.delete(fileDoc._id);
+          fileDeleted = true;
+        } catch (err) {
+          /* ignora */
+        }
+      }
+    }
+
+    // 2) Remover referência do produto específico
+    const productUpdate = await productsCol.updateOne(
+      { id: productId },
+      {
+        $pull: {
+          imagens: {
+            $or: [
+              { gridFsId: identifier },
+              { gridFsId: idObj },
+              { name: identifier }
+            ]
+          }
+        }
+      }
+    );
+
+    // 3) Se não removeu nada, remover de TODOS os documentos
+    let fallbackUpdate = null;
+    if (productUpdate.modifiedCount === 0) {
+      fallbackUpdate = await productsCol.updateMany(
+        {},
+        {
+          $pull: {
+            imagens: {
+              $or: [
+                { gridFsId: identifier },
+                { gridFsId: idObj },
+                { name: identifier }
+              ]
+            }
+          }
+        }
+      );
+    }
+
+    return res.json({
+      ok: true,
+      fileDeleted,
+      removedFromProductsCount: productUpdate.modifiedCount + (fallbackUpdate?.modifiedCount || 0),
+      productId,
+      identifier
+    });
+
+  } catch (err) {
+    console.error("Erro delete image:", err);
+    res.status(500).json({ ok: false, error: "Erro ao deletar imagem" });
+  }
+});
+
+
+// -----------------------------------------------------------------------------
+// ROTA para servir imagens via GridFS (GET /api/uploads/:id)
+// Se quiser servir via GridFS (em vez de /uploads static), implemente assim.
+// -----------------------------------------------------------------------------
+app.get('/api/uploads/:identifier', async (req, res) => {
+  try {
+    const { identifier } = req.params;
+    const { db, bucket } = await connectDB();
+    const filesCol = db.collection((process.env.GRIDFS_BUCKET || 'uploads') + '.files');
+
+    // usa ObjectId do mongoose
+    const { ObjectId } = mongoose.Types;
+
+    // tenta achar por ObjectId
+    if (ObjectId.isValid(identifier)) {
+      const _id = new ObjectId(identifier);  // ✅ CORRETO
+      const fileDoc = await filesCol.findOne({ _id });
+      if (!fileDoc) return res.status(404).send('Not found');
+
+      const stream = bucket.openDownloadStream(_id);
+      res.setHeader('Content-Type', fileDoc.contentType || 'application/octet-stream');
+      return stream.pipe(res);
+    }
+
+    // tenta por filename
+    const fileDoc = await filesCol.findOne({ filename: identifier });
+    if (!fileDoc) return res.status(404).send('Not found');
+
+    const stream = bucket.openDownloadStream(fileDoc._id);
+    res.setHeader('Content-Type', fileDoc.contentType || 'application/octet-stream');
+    return stream.pipe(res);
+
+  } catch (err) {
+    console.error("Erro GET /api/uploads/:identifier", err);
+    return res.status(500).send("Erro servidor");
+  }
+});
+
+// -----------------------------------------------------------------------------
+// Inicia servidor
+// -----------------------------------------------------------------------------
+// Inicialização do servidor SOMENTE após conectar ao MongoDB
+(async () => {
+  try {
+    await connectDB();
+    console.log('MongoDB conectado — iniciando servidor...');
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+    });
+  } catch (err) {
+    console.error('Erro ao iniciar servidor:', err);
+    process.exit(1);
+  }
+})();

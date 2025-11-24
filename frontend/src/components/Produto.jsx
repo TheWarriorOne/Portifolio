@@ -8,7 +8,6 @@ import './Produto.css';
 
 const ItemTypes = { IMAGE: 'image' };
 
-// DraggableImage component (sem alterações funcionais)
 function DraggableImage({
   productId,
   productDesc,
@@ -28,9 +27,7 @@ function DraggableImage({
     type: ItemTypes.IMAGE,
     item: { index, productId },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
-    end: () => {
-      onDropPersist(productId);
-    },
+    end: () => onDropPersist(productId),
   });
 
   const [, drop] = useDrop({
@@ -39,17 +36,13 @@ function DraggableImage({
       if (dragged.productId !== productId) return;
       if (dragged.index === index) return;
       if (!ref.current) return;
-
       const rect = ref.current.getBoundingClientRect();
       const middleX = (rect.right - rect.left) / 2;
       const clientOffset = monitor.getClientOffset();
       if (!clientOffset) return;
-
       const hoverClientX = clientOffset.x - rect.left;
-
       if (dragged.index < index && hoverClientX < middleX) return;
       if (dragged.index > index && hoverClientX > middleX) return;
-
       moveImage(productId, dragged.index, index);
       dragged.index = index;
     },
@@ -57,6 +50,8 @@ function DraggableImage({
   });
 
   drag(drop(ref));
+
+  const identifier = image.gridFsId || image.name;
 
   return (
     <div
@@ -66,10 +61,11 @@ function DraggableImage({
       title="Arraste para reordenar"
     >
       <img
-        src={getImageUrl(image.name)}
-        alt={`${productDesc}`}
+        src={getImageUrl(identifier)}
+        alt={productDesc || ''}
         className="produto-product-img"
-        onClick={() => onPreview(getImageUrl(image.name))}
+        onClick={() => onPreview(getImageUrl(identifier))}
+        loading="lazy"
       />
       <div className="produto-image-actions">
         <button
@@ -116,11 +112,11 @@ export default function Produto() {
 
     async function fetchProducts() {
       try {
-        const res = await api.get('/products');
+        const res = await api.get('/products'); // api.js baseURL já tem /api
         if (!mounted) return;
         setProducts(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
-        console.error(err);
+        console.error('Erro fetchProducts:', err);
         if (mounted) setError('Erro ao buscar produtos do servidor.');
       } finally {
         if (mounted) setLoading(false);
@@ -128,26 +124,30 @@ export default function Produto() {
     }
 
     fetchProducts();
-
-    return () => {
-      mounted = false;
-    };
+    return () => { mounted = false; };
   }, []);
 
-  const base = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-  const getImageUrl = (imageName) => `${base.replace(/\/$/, '')}/uploads/${imageName}`;
+  const base = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
+  const getImageUrl = (identifier) => `${base}/api/uploads/${encodeURIComponent(identifier)}`;
 
-  // Aprovar / Rejeitar
   const handleApprove = async (productId, imageName) => {
     try {
       const product = products.find((p) => p.id === productId);
       const img = product?.imagens.find((i) => i.name === imageName);
       const action = img?.approved ? 'unapprove' : 'approve';
-      await api.post('/approve', { productId, imageName, action });
-      const res = await api.get('/products');
-      setProducts(res.data);
-    } catch {
-      setError('Erro ao aprovar/desaprovar imagem.');
+      const identifier = img?.gridFsId || imageName;
+
+      const res = await api.post('/approve', { productId, imageIdentifier: identifier, action });
+      if (res.data?.product) {
+        setProducts((prev) => prev.map((p) => (p.id === productId ? res.data.product : p)));
+      } else {
+        const newRes = await api.get('/products');
+        setProducts(newRes.data);
+      }
+    } catch (err) {
+      console.error('Erro handleApprove:', err);
+      const msg = err.response?.data?.error || err.message || 'Erro ao aprovar/desaprovar imagem.';
+      setError(msg);
     }
   };
 
@@ -156,38 +156,92 @@ export default function Produto() {
       const product = products.find((p) => p.id === productId);
       const img = product?.imagens.find((i) => i.name === imageName);
       const action = img?.rejected ? 'unreject' : 'reject';
-      await api.post('/approve', { productId, imageName, action });
-      const res = await api.get('/products');
-      setProducts(res.data);
-    } catch {
-      setError('Erro ao rejeitar/desrejeitar imagem.');
+      const identifier = img?.gridFsId || imageName;
+
+      const res = await api.post('/approve', { productId, imageIdentifier: identifier, action });
+      if (res.data?.product) {
+        setProducts((prev) => prev.map((p) => (p.id === productId ? res.data.product : p)));
+      } else {
+        const newRes = await api.get('/products');
+        setProducts(newRes.data);
+      }
+    } catch (err) {
+      console.error('Erro handleReject:', err);
+      const msg = err.response?.data?.error || err.message || 'Erro ao rejeitar/desrejeitar imagem.';
+      setError(msg);
     }
   };
 
-  // Excluir
   const askDelete = (productId, imageName) => setConfirmData({ productId, imageName });
 
   const confirmDelete = async () => {
-    const { productId, imageName } = confirmData;
-    setConfirmData(null);
     try {
-      await api.delete(`/images/${imageName}`);
-      setProducts((prev) =>
-        prev
-          .map((p) =>
-            p.id === productId ? { ...p, imagens: p.imagens.filter((i) => i.name !== imageName) } : p
-          )
-          .filter((p) => (Array.isArray(p.imagens) ? p.imagens.length > 0 : true))
+      if (!confirmData) return;
+      const { productId, imageName } = confirmData;
+      setConfirmData(null);
+
+      // Localiza o produto no state
+      const product = products.find((p) => String(p.id) === String(productId));
+      if (!product) {
+        console.error("Produto não encontrado no state.");
+        setError("Produto não encontrado.");
+        return;
+      }
+
+      // Localiza a imagem (por nome)
+      const img = product.imagens.find((i) => i.name === imageName);
+      if (!img) {
+        console.error("Imagem não encontrada no produto.");
+        setError("Imagem não encontrada no produto.");
+        return;
+      }
+
+      // Identificador preferencial
+      const identifier = img.gridFsId || img.name;
+
+      // Chama o novo endpoint DELETE
+      const res = await api.delete(
+        `/products/${encodeURIComponent(productId)}/image/${encodeURIComponent(identifier)}`
       );
-      setToast({ show: true, text: 'Imagem excluída com sucesso!' });
-      setTimeout(() => setToast({ show: false, text: '' }), 2000);
-    } catch {
-      setError('Erro ao deletar imagem.');
+
+      // Se deu tudo certo
+      if (res.data?.ok) {
+        if (res.data.removedFromProductsCount > 0) {
+          // Atualiza estado local — remove imagem
+          setProducts((prev) =>
+            prev.map((p) => {
+              if (String(p.id) !== String(productId)) return p;
+              return {
+                ...p,
+                imagens: p.imagens.filter(
+                  (i) => (i.gridFsId || i.name) !== identifier
+                ),
+              };
+            })
+          );
+        } else {
+          // fallback: recarrega tudo
+          const newRes = await api.get('/products');
+          setProducts(Array.isArray(newRes.data) ? newRes.data : []);
+        }
+
+        setToast({ show: true, text: "Imagem excluída com sucesso!" });
+        setTimeout(() => setToast({ show: false, text: "" }), 2000);
+      } else {
+        setError("Erro ao excluir imagem no servidor.");
+      }
+    } catch (err) {
+      console.error("Erro confirmDelete:", err);
+      const msg =
+        err.response?.data?.error ||
+        err.message ||
+        "Erro inesperado ao deletar imagem.";
+      setError(msg);
     }
   };
+
   const cancelDelete = () => setConfirmData(null);
 
-  // Reordenação UI
   const moveImage = useCallback((productId, from, to) => {
     setProducts((prev) =>
       prev.map((p) => {
@@ -200,7 +254,6 @@ export default function Produto() {
     );
   }, []);
 
-  // Persistir ordem no backend
   const persistOrder = async (productId) => {
     try {
       const product = products.find((p) => p.id === productId);
@@ -209,7 +262,8 @@ export default function Produto() {
       await api.put(`/products/${productId}/order`, { order: newOrder });
       setToast({ show: true, text: 'Ordem atualizada!' });
       setTimeout(() => setToast({ show: false, text: '' }), 1200);
-    } catch {
+    } catch (err) {
+      console.error('Erro persistOrder:', err);
       setError('Não foi possível salvar a nova ordem.');
     }
   };
@@ -272,7 +326,7 @@ export default function Produto() {
                         {Array.isArray(product.imagens) && product.imagens.length > 0 ? (
                           product.imagens.map((image, index) => (
                             <DraggableImage
-                              key={`${product.id}-${image.name}`}
+                              key={`${product.id}-${image.gridFsId || image.name}`}
                               productId={product.id}
                               productDesc={product.descricao}
                               image={image}

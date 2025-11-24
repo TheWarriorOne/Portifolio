@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { setAuthToken } from '../services/api';
+import api from '../services/api';
 import { Eye, EyeOff } from 'lucide-react';
 import './Login.css';
 
@@ -39,9 +39,6 @@ const handleSubmit = async (e) => {
       localStorage.removeItem('token');
       localStorage.removeItem('rememberedUsername');
     }
-
-    // Aplica token na instância global do axios
-    setAuthToken(token);
 
     navigate('/decisao');
   } catch (err) {

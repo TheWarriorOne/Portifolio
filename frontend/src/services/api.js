@@ -1,28 +1,17 @@
 // frontend/src/services/api.js
 import axios from 'axios';
 
-// Base da API (Vite)
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
-// Cria instância global
+const base = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
 const api = axios.create({
-  baseURL,
+  baseURL: `${base}/api`, // deixa o frontend usar caminhos como api.get('/products')
+  timeout: 15000,
 });
 
-// Função para aplicar token após login
-export function setAuthToken(token) {
-  if (token) {
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-  } else {
-    delete api.defaults.headers.common['Authorization'];
-  }
-}
-
-// Se houver token salvo, aplica automaticamente
-if (typeof window !== "undefined") {
-  const token =
-    localStorage.getItem("token") || sessionStorage.getItem("token");
-  if (token) setAuthToken(token);
-}
+// opcional: interceptors para injetar token se tiver auth
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token'); // ou outro storage
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 export default api;
