@@ -1,5 +1,4 @@
 import './Decisao.css';
-
 import { useNavigate } from 'react-router-dom';
 import { Search, Plus, Upload } from 'lucide-react';
 

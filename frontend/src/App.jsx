@@ -11,6 +11,7 @@ export default function App() {
     if (!token) navigate('/'); // Redireciona para login se não autenticado
   }, [navigate]);
 
+
   const [files, setFiles] = useState([]); // Array de arquivos selecionados
   const [previews, setPreviews] = useState([]); // Array de URLs de preview
   const [id, setId] = useState('');

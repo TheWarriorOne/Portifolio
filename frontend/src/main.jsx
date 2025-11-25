@@ -5,19 +5,47 @@ import Login from './components/Login.jsx';
 import Produto from './components/Produto.jsx';
 import App from './App.jsx';
 import Decisao from './components/Decisao.jsx';
-import ImportProducts from './components/ImportProducts';
+import ImportProducts from './components/ImportProducts.jsx';
+import PrivateRoute from './components/PrivateRoute.jsx';
 import './App.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
       <Routes>
+        {/* PÚBLICA */}
         <Route path="/" element={<Login />} />
-        <Route path="/decisao" element={<Decisao />} />
-        <Route path="/app" element={<App />} />
-        <Route path="/produto" element={<Produto />} />
-        <Route path="/produto/:id/:img" element={<Produto />} />
-        <Route path="/import" element={<ImportProducts />} />
+
+        {/* ROTAS PROTEGIDAS */}
+        <Route path="/decisao" element={
+          <PrivateRoute>
+            <Decisao />
+          </PrivateRoute>
+        } />
+
+        <Route path="/app" element={
+          <PrivateRoute>
+            <App />
+          </PrivateRoute>
+        } />
+
+        <Route path="/produto" element={
+          <PrivateRoute>
+            <Produto />
+          </PrivateRoute>
+        } />
+
+        <Route path="/produto/:id/:img" element={
+          <PrivateRoute>
+            <Produto />
+          </PrivateRoute>
+        } />
+
+        <Route path="/import" element={
+          <PrivateRoute>
+            <ImportProducts />
+          </PrivateRoute>
+        } />
       </Routes>
     </Router>
   </React.StrictMode>
