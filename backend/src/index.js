@@ -4,7 +4,7 @@ import cors from 'cors';
 import multer from 'multer';
 import morgan from 'morgan';
 import { fileTypeFromBuffer } from 'file-type';
-import fs from 'fs';
+import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { connectDB } from './db.js'; // sua função de conexão (assume que retorna { db, bucket } quando await)
@@ -20,7 +20,7 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors({ origin: 'http://localhost:5173' }));
+app.use(cors({ origin: '*' }));
 app.use(morgan('dev'));
 app.use(express.json());
 
@@ -29,7 +29,7 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // Serve uploads locais (legacy)
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, '../api/uploads')));
 
 // -----------------------------------------------------------------------------
 // ROTA HOME
@@ -95,7 +95,7 @@ app.post('/api/login', handleLogin);
 // -----------------------------------------------------------------------------
 // UPLOAD LEGACY (grava arquivos no folder /uploads local)
 // -----------------------------------------------------------------------------
-app.post('/api/upload', upload.array('images'), async (req, res) => {
+app.post('/api/uploads', upload.array('images'), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ error: 'Nenhum arquivo enviado' });

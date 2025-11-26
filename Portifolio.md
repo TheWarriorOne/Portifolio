@@ -137,7 +137,7 @@ RNF01 – RNF10 (detalhados no documento original).
 
 ### Especificações da API
 
-- **POST /upload:** Envia imagens ao servidor.
+- **POST /api/upload:** Envia imagens ao servidor.
 
   - **Parâmetros:** `images` (array de base64)
   - **Resposta:** `{ status: 'success', message: 'Upload concluído' }`

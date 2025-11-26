@@ -26,7 +26,7 @@ async function findFile(db, identifier) {
  * Body: multipart/form-data (field `file`)
  * Retorna: { fileId, filename, uploadDate, length }
  */
-router.post('/upload', upload.single('file'), async (req, res) => {
+router.post('/api/upload', upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Arquivo não enviado' });
   try {
     const { bucket } = await connectDB();
@@ -86,7 +86,7 @@ router.get('/images', async (req, res) => {
  * identifier = filename OR fileId (ObjectId string).
  * Faz streaming do arquivo para o cliente.
  */
-router.get('/uploads/:identifier', async (req, res) => {
+router.get('/api/uploads/:identifier', async (req, res) => {
   try {
     const { bucket, db } = await connectDB();
     const identifier = req.params.identifier;

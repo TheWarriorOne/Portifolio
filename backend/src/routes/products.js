@@ -8,7 +8,7 @@ const router = express.Router();
  * GET /api/products
  * Lista todos os produtos
  */
-router.get('/products', async (req, res) => {
+router.get('/api/products', async (req, res) => {
   try {
     const products = await ImageModel.find({}).lean();
     res.json(products);

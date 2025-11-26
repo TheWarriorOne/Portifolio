@@ -43,7 +43,7 @@ export default function App() {
     formData.append('grupo', grupo || 'Sem grupo');
     
     try {
-      const res = await api.post('/upload', formData, {
+      const res = await api.post('/api/uploads', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       });
       setMessage(res.data.message);

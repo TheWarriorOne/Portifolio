@@ -1,0 +1,35 @@
+{
+  "family": "ecogram-backend-task",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::113204170412:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::113204170412:role/ecsTaskRole",
+  "containerDefinitions": [
+    {
+      "name": "ecogram-backend",
+      "image": "113204170412.dkr.ecr.us-east-1.amazonaws.com/ecogram-backend:latest",
+      "portMappings": [{ "containerPort": 3000, "protocol": "tcp" }],
+      "environment": [{ "name": "NODE_ENV", "value": "production" }],
+      "secrets": [
+        {
+          "name": "MONGO_URI",
+          "valueFrom": "arn:aws:ssm:us-east-1:113204170412:parameter/ecogram/MONGO_URI"
+        },
+        {
+          "name": "JWT_SECRET",
+          "valueFrom": "arn:aws:ssm:us-east-1:113204170412:parameter/ecogram/JWT_SECRET"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecogram-backend",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

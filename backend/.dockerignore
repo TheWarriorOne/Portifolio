@@ -1,37 +1,60 @@
+# ===========================================================
+# IGNORAR DEPENDÊNCIAS (SERÃO REINSTALADAS NO DOCKER)
+# ===========================================================
 node_modules
-npm-debug.log
-Dockerfile
-docker-compose.yml
-.dockerignore
+**/node_modules
 
-# pnpm
+# pnpm cache local
 .pnpm-store
+**/.pnpm-store
 .pnpm-debug.log
-.pnpm
 
-# vscode
-.vscode
-*.swp
-
-# sistema
-.DS_Store
-Thumbs.db
-
-# builds do front sem querer
+# ===========================================================
+# BUILD & ARTIFACTOS LOCAIS
+# ===========================================================
 dist
 build
+frontend/dist
+backend/dist
 
-# qualquer pasta grande
-*.zip
-*.rar
-*.7z
-*.mp4
-*.avi
-*.mov
-*.mkv
-*.jpg
-*.png
-*.svg
+# ===========================================================
+# LOGS
+# ===========================================================
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
 
-# qualquer hidden folder
-.*
+# ===========================================================
+# SISTEMA / TEMPORÁRIOS
+# ===========================================================
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.swp
+
+# ===========================================================
+# CONFIGS LOCAIS QUE NÃO DEVEM IR PARA O DOCKER
+# ===========================================================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# vscode / editor 
+.vscode/
+.idea/
+
+# ===========================================================
+# ARQUIVOS DE PROJETO QUE NÃO PRECISAM IR PARA IMAGEM
+# ===========================================================
+.git
+.gitignore
+.github
+**/*.md
+LICENSE
+playground*
+docs/

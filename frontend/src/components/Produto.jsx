@@ -201,7 +201,7 @@ export default function Produto() {
 
       // Chama o novo endpoint DELETE
       const res = await api.delete(
-        `/products/${encodeURIComponent(productId)}/image/${encodeURIComponent(identifier)}`
+        `/api/products/${encodeURIComponent(productId)}/image/${encodeURIComponent(identifier)}`
       );
 
       // Se deu tudo certo

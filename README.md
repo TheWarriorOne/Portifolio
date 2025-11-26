@@ -46,7 +46,7 @@ Aplicação para upload, listagem e exclusão de imagens, com backend em Node.js
 ## Endpoints
 
 - **GET /**: Verifica se a API está online.
-- **POST /upload**: Faz upload de uma imagem.
+- **POST /api/upload**: Faz upload de uma imagem.
 - **GET /images**: Lista imagens.
 - **DELETE /images/:name**: Exclui uma imagem.
 
