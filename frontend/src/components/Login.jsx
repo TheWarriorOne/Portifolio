@@ -20,38 +20,50 @@ export default function Login() {
       setUsername(savedUser);
       setRememberMe(true);
     }
-  }, []);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError('');
-  try {
-    const res = await api.post('/login', { username, password });
-    const token = res.data?.token;
-    if (!token) throw new Error('Token não retornado');
-
-    if (rememberMe) {
-      localStorage.setItem('token', token);
-      localStorage.setItem('rememberedUsername', username);
-    } else {
-      sessionStorage.setItem('token', token);
-      localStorage.removeItem('token');
-      localStorage.removeItem('rememberedUsername');
+    // Se existir token em localStorage (usuário já logado)
+    const token = localStorage.getItem('ecogram_token') || sessionStorage.getItem('ecogram_token');
+    if (token) {
+      // opcional: navegar direto se já quiser manter sessão
+      // navigate('/decisao');
     }
+  }, [navigate]);
 
-    navigate('/decisao');
-  } catch (err) {
-    setError(err.response?.data?.error || err.message || 'Erro ao fazer login');
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      const res = await api.post('/login', { username, password });
+      const token = res.data?.token;
+      if (!token) throw new Error('Token não retornado');
 
+      // Salvar token conforme escolha de "remember me"
+      if (rememberMe) {
+        localStorage.setItem('ecogram_token', token);
+        localStorage.setItem('rememberedUsername', username);
+        sessionStorage.removeItem('ecogram_token');
+      } else {
+        sessionStorage.setItem('ecogram_token', token);
+        localStorage.removeItem('ecogram_token');
+        localStorage.removeItem('rememberedUsername');
+      }
+
+      // Opcional: definir header default imediato (api.js também tem interceptor)
+      api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      navigate('/decisao');
+    } catch (err) {
+      // err pode ser axios error ou Error
+      const message = err?.response?.data?.error || err?.message || 'Erro ao fazer login';
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex">
-      {/* Estilo de animação inline (mantido) */}
       <style>
         {`
           @keyframes jumpIn {
@@ -64,7 +76,6 @@ const handleSubmit = async (e) => {
         `}
       </style>
 
-      {/* Lado esquerdo */}
       <div className="w-1/2 flex items-center justify-center bg-gradient-to-r from-[#667eea] to-[#764ba2]">
         <div className="text-center text-white">
           <h1 className="animate-jump-in">
@@ -79,7 +90,6 @@ const handleSubmit = async (e) => {
         </div>
       </div>
 
-      {/* Lado direito: Formulário */}
       <div className="w-1/2 flex items-center justify-center bg-gray-50">
         <div className="w-full max-w-md p-6 bg-white rounded-2xl shadow-lg border border-gray-100">
           <div className="text-center mb-6">
@@ -88,7 +98,6 @@ const handleSubmit = async (e) => {
           </div>
 
           <form onSubmit={handleSubmit} className="login-form space-y-6">
-            {/* Usuário */}
             <div className="mx-4">
               <label htmlFor="username" className="login-label">Seu Usuário</label>
               <input
@@ -102,7 +111,6 @@ const handleSubmit = async (e) => {
               />
             </div>
 
-            {/* Senha */}
             <div className="mx-4">
               <label htmlFor="password" className="login-label">Sua Senha</label>
               <div className="relative">
@@ -119,7 +127,7 @@ const handleSubmit = async (e) => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="password-toggle-btn absolute right-3 top-55% -translate-y-1/2 text-gray-500 hover:text-primary transition-colors duration-200 focus:outline-none"
+                    className="password-toggle-btn absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary transition-colors duration-200 focus:outline-none"
                     aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
                   >
                     {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -128,7 +136,6 @@ const handleSubmit = async (e) => {
               </div>
             </div>
 
-            {/* Lembrar de mim */}
             <div className="mx-4 login-actions">
               <label htmlFor="remember" className="flex items-center space-x-2">
                 <input
@@ -141,7 +148,6 @@ const handleSubmit = async (e) => {
               </label>
             </div>
 
-            {/* Entrar */}
             <div className="botao-entrar mx-4">
               <button type="submit" disabled={loading} className="login-button">
                 {loading ? 'Entrando...' : 'Entrar'}
@@ -149,7 +155,6 @@ const handleSubmit = async (e) => {
             </div>
           </form>
 
-          {/* Pop-up de Erro */}
           {error && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000]">
               <div className="bg-gray-200 border-2 border-gray-400 max-w-sm w-full mx-auto animate-jump-in error-popup">

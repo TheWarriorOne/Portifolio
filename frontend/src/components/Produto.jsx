@@ -127,8 +127,8 @@ export default function Produto() {
     return () => { mounted = false; };
   }, []);
 
-  const base = (import.meta.env.VITE_API_URL || 'http://localhost:3000').replace(/\/$/, '');
-  const getImageUrl = (identifier) => `${base}/api/uploads/${encodeURIComponent(identifier)}`;
+  const API_BASE = import.meta.env.VITE_API_URL || ''; // '' em caso de proxy (CloudFront)
+  const getImageUrl = (identifier) => `${API_BASE}/api/uploads/${encodeURIComponent(identifier)}`;
 
   const handleApprove = async (productId, imageName) => {
     try {
@@ -221,7 +221,7 @@ export default function Produto() {
           );
         } else {
           // fallback: recarrega tudo
-          const newRes = await api.get('/products');
+          const newRes = await api.get(' /products');
           setProducts(Array.isArray(newRes.data) ? newRes.data : []);
         }
 

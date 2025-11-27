@@ -1,17 +1,34 @@
 {
   "family": "ecogram-backend-task",
+  "taskRoleArn": "arn:aws:iam::113204170412:role/ecsTaskRole",
+  "executionRoleArn": "arn:aws:iam::113204170412:role/ecsTaskExecutionRole",
   "networkMode": "awsvpc",
-  "requiresCompatibilities": ["FARGATE"],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
   "cpu": "512",
   "memory": "1024",
-  "executionRoleArn": "arn:aws:iam::113204170412:role/ecsTaskExecutionRole",
-  "taskRoleArn": "arn:aws:iam::113204170412:role/ecsTaskRole",
   "containerDefinitions": [
     {
       "name": "ecogram-backend",
-      "image": "113204170412.dkr.ecr.us-east-1.amazonaws.com/ecogram-backend:v1.0.0",
-      "portMappings": [{ "containerPort": 3000, "protocol": "tcp" }],
-      "environment": [{ "name": "NODE_ENV", "value": "production" }],
+      "image": "113204170412.dkr.ecr.us-east-1.amazonaws.com/ecogram-backend:v1.0.1",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 3000,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "NODE_ENV",
+          "value": "production"
+        }
+      ],
+      "mountPoints": [],
+      "volumesFrom": [],
       "secrets": [
         {
           "name": "MONGO_URI",
@@ -29,7 +46,9 @@
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
-      }
+      },
+      "systemControls": []
     }
-  ]
+  ],
+  "volumes": []
 }

@@ -23,7 +23,7 @@ router.get('/api/products', async (req, res) => {
  * POST /api/approve
  * Aprovar / rejeitar / remover aprovação / remover rejeição
  */
-router.post('/approve', async (req, res) => {
+router.post('/api/approve', async (req, res) => {
   try {
     const { productId, imageIdentifier, action } = req.body;
 

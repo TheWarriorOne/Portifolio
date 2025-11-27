@@ -1,17 +1,28 @@
+// services/api.js
 import axios from 'axios';
 
-// VITE_API_URL só é usada em ambiente dev. Em produção fica vazio → rotas relativas.
-const base = import.meta.env.VITE_API_URL || '';
+const envBase = import.meta.env.VITE_API_URL || '';
+const BASE = (envBase || window.location.origin).replace(/\/$/, '');
+const API_BASE = `${BASE}/api`;
 
 const api = axios.create({
-  baseURL: `${base}/api`,  // <-- prefixo API aqui
+  baseURL: API_BASE,
   timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  const skipAuthPaths = ['/login', '/register', '/forgot-password'];
+  const urlPath = config.url ? config.url.toString() : '';
+  const isAuthRoute = skipAuthPaths.some(p => urlPath.endsWith(p) || urlPath.includes(p));
+
+  if (!isAuthRoute) {
+    const token = localStorage.getItem('ecogram_token') || sessionStorage.getItem('ecogram_token');
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
   return config;
-});
+}, (error) => Promise.reject(error));
 
 export default api;
