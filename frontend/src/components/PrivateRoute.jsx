@@ -1,8 +1,7 @@
-// components/PrivateRoute.jsx
+// src/components/PrivateRoute.jsx
 import { Navigate } from 'react-router-dom';
 
 export default function PrivateRoute({ children }) {
-  // procura o token em várias chaves comuns (compatibilidade)
   const token =
     localStorage.getItem('ecogram_token') ||
     localStorage.getItem('token') ||

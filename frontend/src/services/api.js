@@ -1,4 +1,4 @@
-// services/api.js
+// src/services/api.js
 import axios from 'axios';
 
 const envBase = import.meta.env.VITE_API_URL || '';
@@ -10,6 +10,7 @@ const api = axios.create({
   timeout: 15000,
 });
 
+// não adicionar Authorization para rotas de auth
 api.interceptors.request.use((config) => {
   const skipAuthPaths = ['/login', '/register', '/forgot-password'];
   const urlPath = config.url ? config.url.toString() : '';
@@ -22,6 +23,7 @@ api.interceptors.request.use((config) => {
       config.headers.Authorization = `Bearer ${token}`;
     }
   }
+
   return config;
 }, (error) => Promise.reject(error));
 

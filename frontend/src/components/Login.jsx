@@ -30,37 +30,37 @@ export default function Login() {
   }, [navigate]);
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-    try {
-      const res = await api.post('/login', { username, password });
-      const token = res.data?.token;
-      if (!token) throw new Error('Token não retornado');
+  e.preventDefault();
+  setLoading(true);
+  setError('');
+  try {
+    // envio
+    const res = await api.post('/login', { username, password });
+    const token = res.data?.token;
+    if (!token) throw new Error('Token não retornado');
 
-      // Salvar token conforme escolha de "remember me"
-      if (rememberMe) {
-        localStorage.setItem('ecogram_token', token);
-        localStorage.setItem('rememberedUsername', username);
-        sessionStorage.removeItem('ecogram_token');
-      } else {
-        sessionStorage.setItem('ecogram_token', token);
-        localStorage.removeItem('ecogram_token');
-        localStorage.removeItem('rememberedUsername');
-      }
-
-      // Opcional: definir header default imediato (api.js também tem interceptor)
-      api.defaults.headers.common.Authorization = `Bearer ${token}`;
-
-      navigate('/decisao');
-    } catch (err) {
-      // err pode ser axios error ou Error
-      const message = err?.response?.data?.error || err?.message || 'Erro ao fazer login';
-      setError(message);
-    } finally {
-      setLoading(false);
+    // padroniza a key para "ecogram_token"
+    if (rememberMe) {
+      localStorage.setItem('ecogram_token', token);
+      localStorage.setItem('rememberedUsername', username);
+      // manter também em sessionStorage como redundância opcional
+      sessionStorage.setItem('ecogram_token', token);
+    } else {
+      sessionStorage.setItem('ecogram_token', token);
+      // limpar localStorage caso exista token antigo
+      localStorage.removeItem('ecogram_token');
+      localStorage.removeItem('rememberedUsername');
     }
-  };
+
+    // navegar só depois de salvar token
+    navigate('/decisao');
+  } catch (err) {
+    console.error('Erro no login', err);
+    setError(err.response?.data?.error || err.message || 'Erro ao fazer login');
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex">
