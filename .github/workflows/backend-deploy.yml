@@ -7,11 +7,19 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # <-- usar Linux runner evita problemas de manifest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
+
+      - name: Debug repo layout (temporary)
+        run: |
+          echo "PWD: $(pwd)"
+          echo "ls root:"
+          ls -la
+          echo "ls backend:"
+          ls -la backend || true
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
@@ -29,10 +37,11 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push
+      - name: Build and push image (backend)
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           platforms: linux/amd64
           tags: ${{ secrets.ECR_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }},${{ secrets.ECR_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
