@@ -2,15 +2,15 @@ name: Backend CI/CD — Build Docker → ECR → ECS
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest # <-- usar Linux runner evita problemas de manifest
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Configure AWS credentials
@@ -29,10 +29,11 @@ jobs:
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build and push
+      - name: Build and push image (context: backend)
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./backend                   # <--- contexto apontando para pasta backend
+          file: ./backend/Dockerfile          # <--- caminho do Dockerfile se não estiver no root
           push: true
           platforms: linux/amd64
           tags: ${{ secrets.ECR_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }},${{ secrets.ECR_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
