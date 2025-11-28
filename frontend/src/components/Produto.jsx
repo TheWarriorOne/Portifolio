@@ -200,8 +200,7 @@ export default function Produto() {
       const identifier = img.gridFsId || img.name;
 
       // Chama o novo endpoint DELETE
-      const res = await api.delete(
-        `/api/products/${encodeURIComponent(productId)}/image/${encodeURIComponent(identifier)}`
+      const res = await api.delete(`/products/${encodeURIComponent(productId)}/image/${encodeURIComponent(identifier)}`
       );
 
       // Se deu tudo certo

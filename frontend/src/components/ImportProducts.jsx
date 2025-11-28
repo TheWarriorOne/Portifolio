@@ -105,7 +105,7 @@ export default function ImportProducts() {
     <div className="import-wrap">
 
       {/* ✅ Botão voltar */}
-      <button className="btn-ghost back-btn" onClick={() => navigate('/Decisao')}>
+      <button className="btn-ghost back-btn" onClick={() => navigate('/decisao')}>
         Voltar
       </button>
 

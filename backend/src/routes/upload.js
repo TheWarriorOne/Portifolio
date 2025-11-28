@@ -26,36 +26,52 @@ async function findFile(db, identifier) {
  * Body: multipart/form-data (field `file`)
  * Retorna: { fileId, filename, uploadDate, length }
  */
-router.post('/api/upload', upload.single('file'), async (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'Arquivo não enviado' });
+const { Readable } = require('stream');
+
+router.post('/api/uploads', upload.array('images', 20), async (req, res) => {
+  if (!req.files || req.files.length === 0) {
+    return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+  }
+
   try {
     const { bucket } = await connectDB();
-    const readable = Readable.from(req.file.buffer);
 
-    const uploadStream = bucket.openUploadStream(req.file.originalname, {
-      metadata: {
-        mimeType: req.file.mimetype,
-        uploadedAt: new Date(),
-      },
-    });
+    const results = [];
 
-    readable.pipe(uploadStream)
-      .on('error', (err) => {
-        console.error('GridFS upload error:', err);
-        res.status(500).json({ error: 'Erro ao enviar arquivo' });
-      })
-      .on('finish', () => {
-        const fileId = uploadStream.id ? uploadStream.id.toString() : null;
-        res.status(201).json({
-          fileId,
-          filename: req.file.originalname,
-          uploadDate: new Date(),
-          length: uploadStream.length || undefined,
-        });
+    for (const file of req.files) {
+      const readable = Readable.from(file.buffer);
+
+      const uploadStream = bucket.openUploadStream(file.originalname, {
+        metadata: {
+          mimeType: file.mimetype,
+          uploadedAt: new Date(),
+        },
       });
+
+      await new Promise((resolve, reject) => {
+        readable
+          .pipe(uploadStream)
+          .on('error', (err) => {
+            console.error('GridFS upload error (file):', file.originalname, err);
+            reject(err);
+          })
+          .on('finish', () => {
+            resolve();
+          });
+      });
+
+      results.push({
+        fileId: uploadStream.id ? uploadStream.id.toString() : null,
+        filename: file.originalname,
+        length: uploadStream.length || undefined,
+        uploadDate: new Date(),
+      });
+    }
+
+    return res.status(201).json({ uploaded: results });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro interno' });
+    console.error('GridFS upload error (route):', err);
+    return res.status(500).json({ error: 'Erro ao enviar arquivos' });
   }
 });
 

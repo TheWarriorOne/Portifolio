@@ -6,9 +6,21 @@ import './App.css';
 export default function App() {
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) navigate('/'); // Redireciona para login se não autenticado
+useEffect(() => {
+    // Alinha a checagem com as mesmas keys que PrivateRoute/ Login utilizam
+    const token =
+      localStorage.getItem('ecogram_token') ||
+      localStorage.getItem('token') ||
+      localStorage.getItem('ecogramToken') ||
+      localStorage.getItem('auth_token') ||
+      sessionStorage.getItem('ecogram_token') ||
+      sessionStorage.getItem('token') ||
+      sessionStorage.getItem('ecogramToken') ||
+      sessionStorage.getItem('auth_token');
+
+    if (!token || token === 'null' || token === '') {
+      navigate('/'); // Redireciona para login se não autenticado
+    }
   }, [navigate]);
 
 
@@ -31,33 +43,37 @@ export default function App() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const handleUpload = async () => {
-    if (!files.length || !id) {
-      setMessage('Selecione pelo menos uma imagem e informe o ID');
-      return;
-    }
-    const formData = new FormData();
-    files.forEach((file) => formData.append('images', file)); // Envia múltiplas imagens
-    formData.append('id', id);
-    formData.append('descricao', descricao || 'Sem descrição');
-    formData.append('grupo', grupo || 'Sem grupo');
-    
-    try {
-      const res = await api.post('/api/uploads', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      setMessage(res.data.message);
-      setFiles([]);
-      setPreviews([]);
-      setId('');
-      setDescricao('');
-      setGrupo('');
-      setTimeout(() => setMessage(''), 5000); // Limpa mensagem após 5s
-    } catch (err) {
-      console.error('Erro:', err.response?.data);
-      setMessage('Erro no upload: ' + (err.response?.data?.error || err.message));
-    }
-  };
+// App.jsx — handleUpload para multiple files
+const handleUpload = async () => {
+  if (!files.length || !id) {
+    setMessage('Selecione pelo menos uma imagem e informe o ID');
+    return;
+  }
+
+  const formData = new FormData();
+  // adiciona cada arquivo com o mesmo campo 'images'
+  files.forEach((file) => {
+    formData.append('images', file);
+  });
+  formData.append('id', id);
+  formData.append('descricao', descricao || 'Sem descrição');
+  formData.append('grupo', grupo || 'Sem grupo');
+
+  try {
+    // NÃO setar Content-Type manualmente (axios/browser adicionam o boundary)
+    const res = await api.post('/uploads', formData);
+    setMessage(res.data?.message || `Upload concluído: ${res.data?.uploaded?.length || files.length} arquivo(s)`);
+    setFiles([]);
+    setPreviews([]);
+    setId('');
+    setDescricao('');
+    setGrupo('');
+    setTimeout(() => setMessage(''), 5000);
+  } catch (err) {
+    console.error('Erro no upload:', err.response?.data || err);
+    setMessage('Erro no upload: ' + (err.response?.data?.error || err.message));
+  }
+};
 
   const handleClear = () => {
     setFiles([]);

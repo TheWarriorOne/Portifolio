@@ -29,7 +29,7 @@ export default function Dashboard() {
           {/* Botões principais */}
           <div className="flex flex-col space-y-6 items-center">
             <button
-              onClick={() => navigate('/Produto')}
+              onClick={() => navigate('/produto')}
               className="flex items-center justify-center bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 transform hover:scale-105 space-x-3 w-64"
             >
               <Search size={20} />
