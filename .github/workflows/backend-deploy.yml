@@ -32,8 +32,8 @@ jobs:
       - name: Build and push image (context: backend)
         uses: docker/build-push-action@v5
         with:
-          context: ./backend                   # <--- contexto apontando para pasta backend
-          file: ./backend/Dockerfile          # <--- caminho do Dockerfile se não estiver no root
+          context: ./backend
+          file: ./backend/Dockerfile
           push: true
           platforms: linux/amd64
           tags: ${{ secrets.ECR_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:${{ github.sha }},${{ secrets.ECR_ACCOUNT }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:latest
