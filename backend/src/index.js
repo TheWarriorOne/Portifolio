@@ -96,8 +96,8 @@ app.post('/login', handleLogin);
 app.post('/api/register', handleRegister);
 app.post('/api/login', handleLogin);
 
-app.use('/', productsRouter);
 app.use('/', uploadRouter);
+app.use('/', productsRouter);
 
 // Export app para testes
 export { app };
