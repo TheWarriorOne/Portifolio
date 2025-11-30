@@ -31,7 +31,6 @@ const whitelist = [
 
 const corsOptions = {
   origin: (origin, callback) => {
-    // Se não houver origin (ex.: curl/server-to-server), permitir
     if (!origin) return callback(null, true);
     if (whitelist.includes(origin)) {
       return callback(null, true);
@@ -47,30 +46,22 @@ const corsOptions = {
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors(corsOptions));
-
-// responder preflight para todas rotas (seguro + consistente)
 app.options('*', cors(corsOptions));
 
-// ------------ Multer / static uploads ------------
+// Multer / static uploads
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
+app.use('/api/uploads/static', express.static(path.join(__dirname, './api/uploads')));
 
-// Se você usa GridFS para servir os uploads, mantenha; caso contrário, ajuste.
-// Mantive o static apontando para folder local se houver, mas GridFS endpoints servem arquivos dinamicamente.
-app.use('/api/uploads/static', express.static(path.join(__dirname, '../api/uploads')));
-
-// ------------ Rotas principais / routers ------------
+// Rotas e handlers
 app.get('/', (req, res) => res.json({ message: 'API Portifolio online' }));
 
-// auth handlers (reaproveitando funções)
 async function handleRegister(req, res) {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
-
     const exists = await User.findOne({ username });
     if (exists) return res.status(400).json({ error: 'Usuário já existe' });
-
     const hash = bcrypt.hashSync(password, 10);
     const user = await User.create({ username, password: hash });
     return res.json({ message: 'Usuário criado', id: user._id });
@@ -84,19 +75,15 @@ async function handleLogin(req, res) {
   try {
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ error: 'Dados incompletos' });
-
     const user = await User.findOne({ username });
     if (!user) return res.status(401).json({ error: 'Credenciais inválidas' });
-
     const match = bcrypt.compareSync(password, user.password);
     if (!match) return res.status(401).json({ error: 'Credenciais inválidas' });
-
     const token = jwt.sign(
       { userId: user._id.toString(), username: user.username },
       process.env.JWT_SECRET || 'devsecret',
       { expiresIn: '8h' }
     );
-
     return res.json({ message: 'Login bem-sucedido', token });
   } catch (err) {
     console.error('Erro no login:', err);
@@ -104,30 +91,31 @@ async function handleLogin(req, res) {
   }
 }
 
-// endpoints de autenticação (ambos caminhos compatíveis)
 app.post('/register', handleRegister);
 app.post('/login', handleLogin);
 app.post('/api/register', handleRegister);
 app.post('/api/login', handleLogin);
 
-// Mount routers (eles já definem /api/... internamente)
-app.use('/', productsRouter);   // routes/products.js
-app.use('/', uploadRouter);     // routes/upload.js
+app.use('/', productsRouter);
+app.use('/', uploadRouter);
 
-// Se você ainda usa upload via memoryStorage + GridFS no index.js, mantenha a rota abaixo.
-// No entanto, prefira centralizar uploads no router uploadRouter.
-// app.post('/api/uploads', upload.array('images'), async (req, res) => { ... });
+// Export app para testes
+export { app };
 
-// ------------ Start server com DB connect ------------
-(async () => {
-  try {
-    await connectDB();
-    console.log('MongoDB conectado!');
-    app.listen(port, () => {
-      console.log(`🚀 Server running at http://localhost:${port}`);
-    });
-  } catch (err) {
-    console.error('Erro ao iniciar servidor:', err);
-    process.exit(1);
-  }
-})();
+// Somente conecte DB e rode o servidor quando NÃO estivermos em ambiente de teste.
+// Isso evita listeners abertos durante o jest.
+if (process.env.NODE_ENV !== 'test') {
+  (async () => {
+    try {
+      await connectDB();
+      console.log('MongoDB conectado!');
+      const port = process.env.PORT || 3000;
+      app.listen(port, () => {
+        console.log(`🚀 Server running at http://localhost:${port}`);
+      });
+    } catch (err) {
+      console.error('Erro ao iniciar servidor:', err);
+      process.exit(1);
+    }
+  })();
+}

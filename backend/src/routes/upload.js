@@ -3,7 +3,7 @@ import express from 'express';
 import multer from 'multer';
 import { Readable } from 'stream';
 import { ObjectId } from 'mongodb';
-import { connectDB } from '../db.js';
+import { connectDB, getBucket } from '../db.js';
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB
@@ -26,7 +26,6 @@ async function findFile(db, identifier) {
  * Body: multipart/form-data (field `file`)
  * Retorna: { fileId, filename, uploadDate, length }
  */
-const { Readable } = require('stream');
 
 router.post('/api/uploads', upload.array('images', 20), async (req, res) => {
   if (!req.files || req.files.length === 0) {
@@ -34,7 +33,9 @@ router.post('/api/uploads', upload.array('images', 20), async (req, res) => {
   }
 
   try {
-    const { bucket } = await connectDB();
+    // garante db + bucket inicializados
+    await connectDB();
+    const bucket = getBucket();
 
     const results = [];
 
@@ -47,6 +48,7 @@ router.post('/api/uploads', upload.array('images', 20), async (req, res) => {
           uploadedAt: new Date(),
         },
       });
+
 
       await new Promise((resolve, reject) => {
         readable
@@ -104,7 +106,8 @@ router.get('/images', async (req, res) => {
  */
 router.get('/api/uploads/:identifier', async (req, res) => {
   try {
-    const { bucket, db } = await connectDB();
+    const { db } = await connectDB();
+    const bucket = getBucket();
     const identifier = req.params.identifier;
     const fileDoc = await findFile(db, identifier);
     if (!fileDoc) return res.status(404).json({ error: 'Arquivo não encontrado' });
@@ -132,7 +135,8 @@ router.get('/api/uploads/:identifier', async (req, res) => {
  */
 router.delete('/images/:identifier', async (req, res) => {
   try {
-    const { bucket, db } = await connectDB();
+    const { db } = await connectDB();
+    const bucket = getBucket();
     const identifier = req.params.identifier;
     const fileDoc = await findFile(db, identifier);
     if (!fileDoc) return res.status(404).json({ error: 'Arquivo não encontrado' });

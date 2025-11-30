@@ -1,0 +1,154 @@
+{
+  "widgets": [
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 0,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "CPU Utilization (ECS)",
+        "metrics": [
+          [
+            "ECS/ContainerInsights",
+            "CpuUtilized",
+            "ClusterName",
+            "ecogram-cluster",
+            "ServiceName",
+            "ecogram-service"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "Average"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 6,
+      "y": 0,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "Memory Utilization (ECS)",
+        "metrics": [
+          [
+            "ECS/ContainerInsights",
+            "MemoryUtilized",
+            "ClusterName",
+            "ecogram-cluster",
+            "ServiceName",
+            "ecogram-service"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "Average"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 6,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "Running Tasks (ECS)",
+        "metrics": [
+          [
+            "ECS/ContainerInsights",
+            "RunningTaskCount",
+            "ClusterName",
+            "ecogram-cluster",
+            "ServiceName",
+            "ecogram-service"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "Maximum"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 6,
+      "y": 6,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "Backend Errors (CloudWatch Logs)",
+        "metrics": [
+          [
+            "ECoGram",
+            "BackendErrors"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "Sum"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 12,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "ALB Target 5XX Errors",
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "HTTPCode_Target_5XX_Count",
+            "LoadBalancer",
+            "app/ecogram-alb/21fc5e066d02afd9",
+            "TargetGroup",
+            "targetgroup/ecogram-tg/cfde34338e07ab64"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "Sum"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 6,
+      "y": 12,
+      "width": 6,
+      "height": 6,
+      "properties": {
+        "title": "ALB Latency (p50)",
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "TargetResponseTime",
+            "LoadBalancer",
+            "app/ecogram-alb/21fc5e066d02afd9",
+            "TargetGroup",
+            "targetgroup/ecogram-tg/cfde34338e07ab64"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "p50"
+      }
+    },
+    {
+      "type": "metric",
+      "x": 0,
+      "y": 18,
+      "width": 12,
+      "height": 6,
+      "properties": {
+        "title": "ALB Requests Count",
+        "metrics": [
+          [
+            "AWS/ApplicationELB",
+            "RequestCount",
+            "LoadBalancer",
+            "app/ecogram-alb/21fc5e066d02afd9",
+            "TargetGroup",
+            "targetgroup/ecogram-tg/cfde34338e07ab64"
+          ]
+        ],
+        "region": "us-east-1",
+        "stat": "Sum"
+      }
+    }
+  ]
+}

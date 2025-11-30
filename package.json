@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "install-all": "pnpm install"
+    "install-all": "pnpm install",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
   }
 }
 
