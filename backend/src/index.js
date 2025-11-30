@@ -99,6 +99,23 @@ app.post('/api/login', handleLogin);
 app.use('/', uploadRouter);
 app.use('/', productsRouter);
 
+app.get('/__routes', (req, res) => {
+  const routes = [];
+  app._router.stack.forEach(m => {
+    if (m.route && m.route.path) {
+      const methods = Object.keys(m.route.methods).join(',');
+      routes.push({ path: m.route.path, methods });
+    } else if (m.name === 'router' && m.handle && m.handle.stack) {
+      m.handle.stack.forEach(r => {
+        if (r.route) {
+          const methods = Object.keys(r.route.methods).join(',');
+          routes.push({ path: r.route.path, methods });
+        }
+      });
+    }
+  });
+  res.json(routes);
+});
 // Export app para testes
 export { app };
 
