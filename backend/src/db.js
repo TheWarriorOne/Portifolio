@@ -1,79 +1,53 @@
-// backend/src/db.js
-import mongoose from 'mongoose';
-import { GridFSBucket } from 'mongodb';
-import dotenv from 'dotenv';
+// src/db.js
+import { MongoClient, GridFSBucket } from "mongodb";
 
-dotenv.config();
-
-let connected = false;
-let bucket = null;
+let client = null;
+let db = null;
 
 /**
- * Obtém a URI do ambiente (aceita múltiplos nomes comuns).
+ * Connect to MongoDB and return { client, db, gridfsBucket }.
+ * Throws on failure.
  */
-function getMongoUri() {
-  return (
-    process.env.MONGO_URI ||
-    process.env.MONGODB_URI ||
-    process.env.MONGO_URL ||
-    process.env.DB_URI ||
-    null
-  );
-}
-
-/**
- * Conecta o Mongoose (singleton) e cria um GridFSBucket que pode ser usado
- * por rotas de upload/download.
- *
- * Retorna um objeto { db, bucket } onde:
- *  - db: referência ao db (mongoose.connection.db)
- *  - bucket: GridFSBucket do driver mongodb
- */
-export const connectDB = async () => {
-  if (connected && mongoose.connection?.readyState === 1) {
-    return { db: mongoose.connection.db, bucket };
+export async function connectDB(uri) {
+  if (!uri) throw new Error("MONGO_URI not provided to connectDB");
+  // reuse existing connection if present
+  if (client && db) {
+    return { client, db, gridfsBucket: new GridFSBucket(db) };
   }
 
-  const uri = getMongoUri();
-  if (!uri) {
-    throw new Error(
-      'MongoDB URI não encontrada. Defina MONGO_URI / MONGODB_URI / MONGO_URL no .env'
-    );
-  }
+  client = new MongoClient(uri, {
+    serverSelectionTimeoutMS: 10000,
+    connectTimeoutMS: 10000,
+  });
 
   try {
-    // Conecta o mongoose — dbName opcional
-    await mongoose.connect(uri, {
-      dbName: process.env.MONGO_DBNAME || 'portifolio',
-      // opções antigas são ignoradas pelas versões mais novas, mantemos por compatibilidade
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
+    console.log("Mongo: conectando...");
+    await client.connect();
 
-    // pega a instância do driver nativo
-    const db = mongoose.connection.db;
-
-    // Criar GridFSBucket apenas se ainda não existir
-    if (!bucket) {
-      // GridFSBucket vem do pacote 'mongodb' (certifique-se que 'mongodb' está instalado)
-      bucket = new GridFSBucket(db, {
-        bucketName: process.env.GRIDFS_BUCKET || 'uploads',
-      });
+    // se a URI tem /dbname, usa-o; senão usa default
+    let dbName = null;
+    try {
+      const parsed = new URL(uri);
+      if (parsed.pathname && parsed.pathname !== "/") dbName = parsed.pathname.replace(/^\//, "");
+    } catch (e) {
+      // ignore
     }
 
-    connected = true;
-    console.log('✅ MongoDB conectado (mongoose) e GridFSBucket pronto');
-    return { db, bucket };
+    db = dbName ? client.db(dbName) : client.db();
+    console.log("Mongo: conectado. DB:", db.databaseName);
+
+    const gridfsBucket = new GridFSBucket(db);
+    return { client, db, gridfsBucket };
   } catch (err) {
-    console.error('❌ Erro ao conectar MongoDB:', err.message || err);
+    console.error("Erro ao conectar MongoDB:", err);
+    try { await client.close(); } catch(e) {}
+    client = null;
+    db = null;
     throw err;
   }
-};
+}
 
-/**
- * Helper para acessar o bucket após connectDB()
- */
-export const getBucket = () => {
-  if (!bucket) throw new Error('GridFSBucket não inicializado. Chame connectDB() primeiro.');
-  return bucket;
-};
+export function getDb() {
+  if (!db) throw new Error("Database not connected. Call connectDB first.");
+  return db;
+}

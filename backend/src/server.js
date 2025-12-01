@@ -1,18 +1,24 @@
-// backend/src/server.js
-import { connectDB } from './db.js';
-import { app } from './index.js';
+// src/server.js
+import express from "express";
+import { connectDB } from "./db.js";
 
-const port = process.env.PORT || 3000;
+const app = express();
+
+app.get("/api/health", (req, res) => res.status(200).json({ ok: true }));
 
 (async () => {
   try {
-    await connectDB();
-    console.log('MongoDB conectado!');
+    const { db, gridfsBucket } = await connectDB(process.env.MONGO_URI);
+    // injete db/gridfsBucket no seu app se necessário (ex: app.locals.db = db)
+    app.locals.db = db;
+    app.locals.gridfs = gridfsBucket;
+
+    const port = process.env.PORT || 3000;
     app.listen(port, () => {
-      console.log(`🚀 Server running at http://localhost:${port}`);
+      console.log(`Server listening on port ${port}`);
     });
   } catch (err) {
-    console.error('Erro ao iniciar servidor:', err);
+    console.error("Erro ao iniciar servidor:", err);
     process.exit(1);
   }
 })();

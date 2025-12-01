@@ -1,15 +1,23 @@
-FROM node:18-alpine
+# Dockerfile (opÃ§Ã£o A: Debian slim com apt-get)
+FROM node:18-bullseye-slim
+
 WORKDIR /app
 
-# copiar apenas package.json para aproveitar cache
+# instalar locales e gerar en_US.UTF-8
+RUN apt-get update && apt-get install -y locales \
+    && sed -i 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen \
+    && locale-gen en_US.UTF-8 \
+    && rm -rf /var/lib/apt/lists/*
+
+# variÃ¡veis de ambiente
+ENV LANG=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    PYTHONIOENCODING=utf-8
+
 COPY package*.json ./
+RUN npm ci --only=production
 
-# instalar dependências de produção
-RUN npm install --production
-
-# copiar o restante do código
 COPY . .
 
-ENV NODE_ENV=production
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+CMD ["node","src/server.js"]
