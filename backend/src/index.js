@@ -1,11 +1,10 @@
-// backend/src/index.js
+// src/index.js
 import express from 'express';
 import cors from 'cors';
 import multer from 'multer';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { connectDB } from './db.js';
 import Image from './models/Image.js';
 import User from './models/User.js';
 import bcrypt from 'bcryptjs';
@@ -20,7 +19,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3000;
 
 // ------------ CORS DINÂMICO SEGURO ------------
 const whitelist = [
@@ -116,23 +114,6 @@ app.get('/__routes', (req, res) => {
   });
   res.json(routes);
 });
-// Export app para testes
-export { app };
 
-// Somente conecte DB e rode o servidor quando NÃO estivermos em ambiente de teste.
-// Isso evita listeners abertos durante o jest.
-if (process.env.NODE_ENV !== 'test') {
-  (async () => {
-    try {
-      await connectDB();
-      console.log('MongoDB conectado!');
-      const port = process.env.PORT || 3000;
-      app.listen(port, () => {
-        console.log(`🚀 Server running at http://localhost:${port}`);
-      });
-    } catch (err) {
-      console.error('Erro ao iniciar servidor:', err);
-      process.exit(1);
-    }
-  })();
-}
+// Export named app (observe: named export)
+export { app };

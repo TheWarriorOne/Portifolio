@@ -1,21 +1,29 @@
 # ===========================================================
-# IGNORAR DEPENDÊNCIAS (SERÃO REINSTALADAS NO DOCKER)
+# DEPENDÊNCIAS (sempre instaladas no Docker)
 # ===========================================================
 node_modules
 **/node_modules
 
-# pnpm cache local
+# pnpm caches
 .pnpm-store
 **/.pnpm-store
 .pnpm-debug.log
 
 # ===========================================================
-# BUILD & ARTIFACTOS LOCAIS
+# BUILD / ARTIFACTS
 # ===========================================================
 dist
 build
-frontend/dist
 backend/dist
+
+# ⚠️ remover caso o frontend seja buildado dentro do Docker
+frontend/dist
+
+coverage/
+.turbo/
+.cache/
+tmp/
+*.tsbuildinfo
 
 # ===========================================================
 # LOGS
@@ -27,7 +35,7 @@ pnpm-debug.log*
 *.log
 
 # ===========================================================
-# SISTEMA / TEMPORÁRIOS
+# SISTEMA / TEMP
 # ===========================================================
 .DS_Store
 Thumbs.db
@@ -36,25 +44,28 @@ Thumbs.db
 *.swp
 
 # ===========================================================
-# CONFIGS LOCAIS QUE NÃO DEVEM IR PARA O DOCKER
+# ARQUIVOS DE CONFIG SENSÍVEIS
 # ===========================================================
 .env
-.env.local
-.env.development
-.env.production
-.env.test
+.env.*
+!.env.example   # exemplo permitido
 
-# vscode / editor 
+# ===========================================================
+# EDITORES
+# ===========================================================
 .vscode/
 .idea/
 
 # ===========================================================
-# ARQUIVOS DE PROJETO QUE NÃO PRECISAM IR PARA IMAGEM
+# REPOSITÓRIO / ADMINISTRATIVO
 # ===========================================================
 .git
-.gitignore
 .github
-**/*.md
+.gitignore
+
+# remover esta linha se quiser manter README.md e docs
+# **/*.md
+
 LICENSE
 playground*
 docs/

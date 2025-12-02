@@ -1,0 +1,34 @@
+{
+    "LoadBalancers": [
+        {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:us-east-1:113204170412:loadbalancer/app/ecogram-alb/21fc5e066d02afd9",
+            "DNSName": "ecogram-alb-664240007.us-east-1.elb.amazonaws.com",
+            "CanonicalHostedZoneId": "Z35SXDOTRQ7X7K",
+            "CreatedTime": "2025-11-26T00:07:07.706000+00:00",
+            "LoadBalancerName": "ecogram-alb",
+            "Scheme": "internet-facing",
+            "VpcId": "vpc-0d35ebebf50daf5c5",
+            "State": {
+                "Code": "active"
+            },
+            "Type": "application",
+            "AvailabilityZones": [
+                {
+                    "ZoneName": "us-east-1d",
+                    "SubnetId": "subnet-0ac4dd921bc248840",
+                    "LoadBalancerAddresses": []
+                },
+                {
+                    "ZoneName": "us-east-1f",
+                    "SubnetId": "subnet-0d60baafc86f6cf65",
+                    "LoadBalancerAddresses": []
+                }
+            ],
+            "SecurityGroups": [
+                "sg-088b6ffd4995bbc06"
+            ],
+            "IpAddressType": "ipv4",
+            "EnablePrefixForIpv6SourceNat": "off"
+        }
+    ]
+}
