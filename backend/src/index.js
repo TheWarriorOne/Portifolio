@@ -31,6 +31,8 @@ const whitelist = [
   'http://localhost:5173',
   'http://localhost:3000',
   'https://d32ppjbrqo5tv3.cloudfront.net',
+  'http://13.222.123.211:5173',
+  'http://13.222.123.211:3000',
 ];
 
 const corsOptions = {
