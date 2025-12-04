@@ -4,7 +4,7 @@ import multer from 'multer';
 import { Readable } from 'stream';
 import { ObjectId } from 'mongodb';
 import { connectDB, getBucket } from '../db.js';
-import ImageModel from './models/Image.js';
+import ImageModel from '../models/Image.js';
 
 
 const router = express.Router();
