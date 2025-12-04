@@ -75,4 +75,60 @@ router.post('/api/approve', async (req, res) => {
   }
 });
 
+router.put('/api/products/:id/order', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { order } = req.body;
+
+    if (!order || !Array.isArray(order)) {
+      return res.status(400).json({ error: 'Body inválido. Esperado { order: [...] }' });
+    }
+
+    // procura pelo campo "id" (como em /api/approve)
+    const product = await ImageModel.findOne({ id: String(productId) });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    // cria um mapa para buscar imagens rapidamente por gridFsId ou name
+    const imgMap = new Map();
+    product.imagens.forEach((img) => {
+      if (img.gridFsId) imgMap.set(String(img.gridFsId), img);
+      if (img.name) imgMap.set(String(img.name), img);
+    });
+
+    // monta nova lista seguindo o array `order`. 
+    // Se alguma identifier não existir, mantenha a imagem original (fallback).
+    const newImagens = [];
+    const used = new Set();
+
+    for (const identifier of order) {
+      const key = String(identifier);
+      const found = imgMap.get(key);
+      if (found) {
+        newImagens.push(found);
+        used.add(found._id?.toString() || found.name);
+      } else {
+        // identifier não encontrada: opcionalmente logar e seguir
+        console.warn(`Order identifier not found for product ${productId}:`, identifier);
+      }
+    }
+
+    // adiciona quaisquer imagens que não foram incluídas no order (evita perda)
+    for (const img of product.imagens) {
+      const uniqueKey = img._id ? String(img._id) : img.name;
+      if (!used.has(uniqueKey) && !used.has(img.name) && !used.has(img.gridFsId)) {
+        newImagens.push(img);
+      }
+    }
+
+    // substitui e salva
+    product.imagens = newImagens;
+    await product.save();
+
+    return res.json({ ok: true, product });
+  } catch (err) {
+    console.error('Erro PUT /api/products/:id/order', err);
+    return res.status(500).json({ error: 'Erro interno ao atualizar ordem' });
+  }
+});
+
 export default router;
