@@ -4,6 +4,8 @@ import multer from 'multer';
 import { Readable } from 'stream';
 import { ObjectId } from 'mongodb';
 import { connectDB, getBucket } from '../db.js';
+import ImageModel from './models/Image.js';
+
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 50 * 1024 * 1024 } }); // 50MB
@@ -70,7 +72,51 @@ router.post('/api/uploads', upload.array('images', 20), async (req, res) => {
       });
     }
 
-    return res.status(201).json({ uploaded: results });
+    const productId = req.body.id;
+    const descricaoFromBody = req.body.descricao || req.body.description || null;
+    const grupoFromBody = req.body.grupo || req.body.group || null;
+
+let product = null;
+if (productId) {
+  try {
+    // importa o model no topo do arquivo: import ImageModel from './models/Image.js';
+    // monta o array de imagens para inserir no documento do produto
+    const newImgs = results.map(r => ({
+      gridFsId: r.fileId,     // id do file em GridFS (string)
+      name: r.filename,       // nome do arquivo (filename)
+      uploadedAt: r.uploadDate || new Date(),
+      approved: false,
+      rejected: false,
+    }));
+
+    // atualiza (ou cria) o produto com upsert
+    product = await ImageModel.findOneAndUpdate(
+      { id: String(productId) }, // procura por campo `id` (compatível com seu products.js)
+      {
+        $push: { imagens: { $each: newImgs } },
+        $setOnInsert: {
+          id: String(productId),
+          descricao: descricaoFromBody || 'Sem descrição',
+          grupo: grupoFromBody || 'Sem grupo',
+          createdAt: new Date(),
+        },
+      },
+      { upsert: true, new: true }
+    );
+
+    console.log(`Upload OK e produto atualizado/criado (id=${productId})`);
+  } catch (err) {
+    console.error('Erro ao criar/atualizar ImageModel após upload:', err);
+    // não falhar o upload por causa do DB do produto — avise no response
+  }
+}
+
+// Retorna uploads e (quando criado/atualizado) o produto
+return res.status(201).json({
+  uploaded: results,
+  product: product ? product : undefined,
+  message: product ? 'Uploads gravados e produto atualizado' : 'Uploads gravados (produto não informado)',
+});
   } catch (err) {
     console.error('GridFS upload error (route):', err);
     return res.status(500).json({ error: 'Erro ao enviar arquivos' });
