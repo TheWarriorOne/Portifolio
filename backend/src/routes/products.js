@@ -1,6 +1,8 @@
 // backend/src/routes/products.js
 import express from 'express';
 import ImageModel from '../models/Image.js';  // <-- seu model de produtos/imagens
+import { ObjectId } from 'mongodb';
+import { connectDB, getBucket } from './db.js'; // ajuste caminhos se necessário
 
 const router = express.Router();
 
@@ -128,6 +130,63 @@ router.put('/api/products/:id/order', async (req, res) => {
   } catch (err) {
     console.error('Erro PUT /api/products/:id/order', err);
     return res.status(500).json({ error: 'Erro interno ao atualizar ordem' });
+  }
+});
+
+router.delete('/api/products/:id/image/:identifier', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const identifier = req.params.identifier;
+
+    // 1) encontra produto pelo campo `id` (como seu /api/approve faz)
+    const product = await ImageModel.findOne({ id: String(productId) });
+    if (!product) return res.status(404).json({ error: 'Produto não encontrado' });
+
+    // 2) tentar localizar a imagem dentro do produto (por gridFsId ou nome)
+    const imgIndex = product.imagens.findIndex(
+      (i) => String(i.gridFsId) === String(identifier) || String(i.name) === String(identifier)
+    );
+    if (imgIndex === -1) {
+      return res.status(404).json({ error: 'Imagem não encontrada no produto' });
+    }
+
+    const img = product.imagens[imgIndex];
+
+    // 3) remove referência localmente
+    product.imagens.splice(imgIndex, 1);
+    await product.save();
+
+    // 4) tenta remover do GridFS (se tiver gridFsId ou se existir arquivo com esse filename)
+    try {
+      // inicializa DB/bucket
+      const { db } = await connectDB();
+      const bucket = getBucket();
+
+      // procura por fileDoc por _id (ObjectId) ou filename
+      let fileDoc = null;
+      const filesCol = db.collection(`${process.env.GRIDFS_BUCKET || 'uploads'}.files`);
+      if (ObjectId.isValid(identifier)) {
+        fileDoc = await filesCol.findOne({ _id: new ObjectId(identifier) });
+      }
+      if (!fileDoc) {
+        // tenta por filename (nome do arquivo)
+        fileDoc = await filesCol.findOne({ filename: identifier });
+      }
+
+      if (fileDoc) {
+        await bucket.delete(fileDoc._id);
+      } else {
+        console.warn('DELETE image: arquivo GridFS não encontrado para identifier=', identifier);
+      }
+    } catch (gfErr) {
+      console.error('Erro ao deletar do GridFS (mas já removi a referência do produto):', gfErr);
+      // não falhar completamente — já removemos a referência do produto
+    }
+
+    return res.json({ ok: true, removedFromProductsCount: 1, product });
+  } catch (err) {
+    console.error('Erro DELETE /api/products/:id/image/:identifier', err);
+    return res.status(500).json({ error: 'Erro interno ao excluir imagem' });
   }
 });
 
