@@ -2,7 +2,7 @@
 import express from 'express';
 import ImageModel from '../models/Image.js';  // <-- seu model de produtos/imagens
 import { ObjectId } from 'mongodb';
-import { connectDB, getBucket } from './db.js'; // ajuste caminhos se necessário
+import { connectDB, getBucket } from '../db.js'; // ajuste caminhos se necessário
 
 const router = express.Router();
 
