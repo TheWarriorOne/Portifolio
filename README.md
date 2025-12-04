@@ -6,18 +6,28 @@ Sistema completo para upload, organização, ordenação e exclusão de imagens 
 
 # Acesso ao Sistema
 http://13.222.123.211:5173/
+
 Login: admin
+
 Senha: Eco1234!
 
 # Funcionalidades
 ✅ Upload de múltiplas imagens via GridFS
+
 ✅ Cadastro produtos (ID, grupo, descrição)
+
 ✅ Ordenação das imagens via drag-and-drop
+
 ✅ Persistência da nova ordem no MongoDB
+
 ✅ Exclusão de imagens (remove do GridFS + do produto)
+
 ✅ Listagem de produtos + preview das imagens
+
 ✅ API REST estruturada
+
 ✅ Autenticação por login (JWT)
+
 ✅ Frontend otimizado em React + Vite
 
 # Arquitetura
@@ -28,52 +38,52 @@ MongoDB Atlas (GridFS) →  Armazenamento das imagens
 ## Instalação
 
 1. Clone o repositório:
-   \`\`\`bash
+   ```bash
    git clone https://github.com/TheWarriorOne/Portifolio.git
    cd Portifolio
-   \`\`\`
+   ```
 
 2. Instale dependências do backend:
-   \`\`\`bash
+   ```bash
    cd backend
    pnpm install
-   \`\`\`
+     ```
 
 3. Configure as variáveis de ambiente:
-   \`\`\`bash
+   ```bash
    cp .env.example .env
-   \`\`\`
+   ```
 
    Edite .env com::
-   \`\`\`bash
+   ```bash
    MONGODB_URI=<sua conexão Atlas>
    JWT_SECRET=<seu segredo>
    GRIDFS_BUCKET=uploads
    PORT=3000
-   \`\`\`
+   ```
 
 4. Rode o backend:
-   \`\`\`bash
+   ```bash
    pnpm dev
-   \`\`\`
+   ```
 
 5. Acesse `http://localhost:3000`.  
 
 6. Instale dependências do frontend:
-   \`\`\`bash
+   ```bash
    cd ../frontend
    pnpm install
-   \`\`\`
+   ```
 
 7. Configure as variáveis de ambiente:
-   \`\`\`bash
+   ```bash
    VITE_API_URL=http://localhost:3000/api
-   \`\`\`
+   ```
 
 8. Rode o frontend:
-   \`\`\`bash
+   ```bash
    pnpm dev
-   \`\`\`
+   ```
 
 9. Acesse `http://localhost:5173`.
 
