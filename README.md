@@ -5,11 +5,15 @@ cat > README.md <<EOF
 Sistema completo para upload, organização, ordenação e exclusão de imagens utilizando Node.js/Express, React/Vite, MongoDB Atlas (GridFS) e hospedagem em AWS EC2 + CloudFront.
 
 # Acesso ao Sistema
+
+Caro Professor(a)
+para acessar o sistemas usar a URL abaixo
+
 http://13.222.123.211:5173/
 
-Login: admin
+Login: admin / Senha: Eco1234!
 
-Senha: Eco1234!
+Motivo: Tive um problema com as tasks do ECS (AWS) onde estavam subindo e ficando Stopped, com isso a ligação do front com o Back não estava acontecendo, por isso foi necessario refazer as conexões em EC2, por esse motivo a URL diferente. 
 
 # Funcionalidades
 ✅ Upload de múltiplas imagens via GridFS
