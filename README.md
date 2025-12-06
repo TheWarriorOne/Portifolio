@@ -2,7 +2,7 @@ cat > README.md <<EOF
 
 # E-coGram — Gerenciador de Imagens para E-commerce
 
-Sistema completo para upload, organização, ordenação e exclusão de imagens utilizando Node.js/Express, React/Vite, MongoDB Atlas (GridFS) e hospedagem em AWS EC2 + CloudFront.
+Sistema completo para upload, organização, ordenação e exclusão de imagens utilizando Node.js/Express, React/Vite, MongoDB Atlas (GridFS) e hospedagem em AWS EC2.
 
 # Acesso ao Sistema
 
